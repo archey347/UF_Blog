@@ -18,7 +18,7 @@ class BlogPostsTable extends Migration
             $this->schema->create('blog_posts', function (Blueprint $table) {
                 
                 $table->increments('id');
-                $table->string('blog_slug', 255);
+                $table->integer('blog_id')->unsigned();
                 
                 $table->string('title', 255);
                 $table->text('content');
