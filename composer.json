@@ -1,0 +1,16 @@
+{
+    "name": "userfrosting/blog",
+    "type": "userfrosting-sprinkle",
+    "description": "Blog Sprinkle for Userfrosting",
+    "license" : "MIT",
+    "authors" : [
+        {
+            "name": "Archey Barrell"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "UserFrosting\\Sprinkle\\Blog\\": "src/"
+        }
+    }
+}
