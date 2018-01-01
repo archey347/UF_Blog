@@ -23,8 +23,8 @@ class BlogPostsTable extends Migration
                 $table->string('title', 255);
                 $table->text('content');
                 
-                $table->integer('last_updates_by', 10)->unsigned();
-                $table->integer('author', 10)->unsigned();
+                $table->integer('last_updates_by')->unsigned();
+                $table->integer('author')->unsigned();
                 
                 $table->timestamps();
 
