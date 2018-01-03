@@ -1,9 +1,36 @@
 {% extends 'pages/abstract/dashboard.html.twig' %}
 
 {# Overrides blocks in head of base template #}
-{% block page_title %}Pastries{% endblock %}
-{% block page_description %}This page provides a yummy list of pastries{% endblock %}
+{% block page_title %}Blog Managment{% endblock %}
+{% block page_description %}{% endblock %}
 
 {% block body_matter %}
-    Hello World!
+	<div id="blogTable" class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title pull-left"><i class="fa fa-fw fa-user"></i>Blogs</h3>
+			{% include "tables/table-tool-menu.html.twig" %}
+		</div>
+		<div class="box-body">
+			{% include "tables/blog-admin.html.twig" with {
+					"table" : {
+						"id" : "table-blogs"
+					}
+				}
+			%}
+		</div>
+		<div class="box-footer">
+			<button type="button" class="btn btn-success js-member-create">
+				<i class="fa fa-plus-square"></i>  Create Blog
+			</button>
+		</div>
+	</div>
+	
+{% endblock %}
+{% block scripts_page %}
+    <script type="text/javascript">
+		$("#blogTable").ufTable({
+			dataUrl: site.uri.public + "/api/blogs"
+		});	
+	</script>
+
 {% endblock %}
