@@ -16,7 +16,8 @@ class Blog extends Model
     protected $fillable = [
         'slug',
         'title',
-        'origin'
+        'read_permission',
+        'write_permission'
     ];
 
     public function posts()
