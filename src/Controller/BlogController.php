@@ -112,12 +112,27 @@ class BlogController extends SimpleController
 		if ($blogs->count()) {
 			$ms->addMessage('danger', "Read Permission '".$data['read_permission']."' already exists.");
 			return $response->withStatus(400);	
+		} else {
+			// If it doesn't exist, then create it
+			$perm = new Permission;
+			$perm->slug = $data['read_permission'];
+			$perm->name = "View Blog '".$data['blog_slug']."'";
+			$perm->conditions = "always()";
+			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
+			$perm->save();
 		}
 		
 		$perms = Permission::where('slug', $data['write_permission'])->get();
 		if ($blogs->count()) {
 			$ms->addMessage('danger', "Write Permission '".$data['write_permission']."' already exists.");
 			return $response->withStatus(400);	
+		} else {
+			$perm = new Permission;
+			$perm->slug = $data['read_permission'];
+			$perm->name = "Edit Blog '".$data['blog_slug']."'";
+			$perm->conditions = "always()";
+			$perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
+			$perm->save();
 		}
 		
 		// Create Blog
