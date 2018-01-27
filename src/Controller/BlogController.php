@@ -22,13 +22,17 @@ class BlogController extends SimpleController
     public function displayBlogAdmin(Request $request, Response $response, $args)
     {
 		
-		$schema = new RequestSchema('schema://requests/create-blog.yaml');
+		$create_schema = new RequestSchema('schema://requests/create-blog.yaml');
+		$create_validator = new JqueryValidationAdapter($create_schema, $this->ci->translator);
 		
-		$validator = new JqueryValidationAdapter($schema, $this->ci->translator);
-        return $this->ci->view->render($response, 'pages/blogs.html.twig', [
+        $edit_schema = new RequestSchema('schema://requests/edit-blog.yaml');
+		$edit_validator = new JqueryValidationAdapter($edit_schema, $this->ci->translator);
+		
+		return $this->ci->view->render($response, 'pages/blogs.html.twig', [
 			'page' => [
 				'validators' => [
-					'createBlog' => $validator->rules()
+					'createBlog' => $create_validator->rules(),
+					'editBlog' => $edit_validator->rules()
 				]
 			]
 		]);        
@@ -144,24 +148,126 @@ class BlogController extends SimpleController
 		$ms->addMessage('success', "Successfully added blog '".$data['blog_slug']."'.");
 		
 	}
+	
+	public function getModalEdit(Request $request, Response $response, $args) {
+		
+		$blog_slug = $request->getQueryParam('slug');
+		
+		$ms = $this->ci->alerts;
+		
+		if($blog_slug == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		$blog = Blog::where('slug', $blog_slug)->first();
+
+		if(!$blog->count()) {
+			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
+			return $response->withStatus(404);
+		}
+		
+        return $this->ci->view->render($response, 'modals/blog.html.twig',
+            [
+                "form" =>
+                [
+                    "submit" => "Update",
+					"action" => "blogs",
+					"method" => "PUT",
+					"id" => "edit-blog"
+                ],
+				"blog" =>
+				[
+					"id" => $blog->id,
+					"slug" => $blog->slug,
+					"name" => $blog->title,
+					"read_p" => $blog->read_permission,
+					"write_p" => $blog->write_permission,
+					"read_id" => Permission::where('slug', $blog->read_permission)->first()->id,
+					"write_id" => Permission::where('slug', $blog->write_permission)->first()->id
+				]
+            ]
+        );    
+    }
+	
+	public function updateBlog(Request $request, Response $response, $args) {
+		// Get submitted data
+		$params = $request->getParsedBody();
+		
+		// Load the request schema
+		$schema = new RequestSchema('schema://requests/edit-blog.yaml');
+		
+		// Whitelist and set parameter defaults
+		$transformer = new RequestDataTransformer($schema);
+		$data = $transformer->transform($params);
+		
+		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
+		$ms = $this->ci->alerts;
+		
+		$validator = new ServerSideValidator($schema, $this->ci->translator);
+		
+		// Add error messages and halt if validation failed
+		if (!$validator->validate($data)) {
+			$ms->addValidationErrors($validator);
+			return $response->withStatus(400);
+		}
+		
+		// Check to make sure that the sent id is valid
+		$current_blog = Blog::find($data['blog_id']);
+		if ($current_blog == null) {
+			$ms->addMessage('danger', "Blog not found.");
+			return $response->withStatus(400);	
+		}
+		
+		// Check if that blog name already exists and is not the blog currently being modified
+		$blog = Blog::where('slug', $data['blog_slug'])->first();
+		if ($blog != null && $blog->id != $current_blog->id) {
+			$ms->addMessage('danger', "Blog '".$data['blog_slug']."' already exists.");
+			return $response->withStatus(400);	
+		}
+		
+		// Check that the permissions don't already exist
+		$perm = Permission::where('slug', $data['read_permission'])->first();
+		if ($perm != null && $perm->id != $data['read_id']) {
+			$ms->addMessage('danger', "Read Permission '".$data['read_permission']."' already exists.");
+			return $response->withStatus(400);	
+		} else {
+			if($perm == null) {
+				$perm = Permission::find($data['read_id']);	
+			}
 			$perm->slug = $data['read_permission'];
-			$perm->name = "Edit Blog '".$data['blog_slug']."'";
+			$perm->name = "View Blog '".$data['blog_slug']."'";
 			$perm->conditions = "always()";
-			$perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
+			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
 			$perm->save();
 		}
 		
-		// Create Blog
-		$blog = new Blog;
+		// Check that the permissions don't already exist
+		$perm = Permission::where('slug', $data['write_permission'])->first();
+		if ($perm != null && $perm->id != $data['write_id']) {
+			$ms->addMessage('danger', "Write Permission '".$data['write_permission']."' already exists.");
+			return $response->withStatus(400);	
+		} else {
+			if($perm == null) {
+				$perm = Permission::find($data['write_id']);
+			}
+			$perm->slug = $data['write_permission'];
+			$perm->name = "Edit Blog '".$data['blog_slug']."'";
+			$perm->conditions = "always()";
+			$perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
+			$perm->save();	
+		}
 		
-		$blog->title = $data['blog_name'];
-		$blog->slug = $data['blog_slug'];
-		$blog->read_permission = $data['read_permission'];
-		$blog->write_permission = $data['write_permission'];
 		
-		$blog->save();
 		
-		$ms->addMessage('success', "Successfully added blog '".$data['blog_slug']."'.");
+		$current_blog->title = $data['blog_name'];
+		$current_blog->slug = $data['blog_slug'];
+		$current_blog->read_permission = $data['read_permission'];
+		$current_blog->write_permission = $data['write_permission'];
+		
+		$current_blog->save();
+		
+		$ms->addMessage('success', "Successfully updated blog '".$data['blog_slug']."'.");
 		
 	}
     

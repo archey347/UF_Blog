@@ -1,6 +1,6 @@
 <form id="{{form.id}}" class="js-form" method="{{form.method | default('POST')}}" action="{{site.uri.public}}/{{form.action}}">
 	{% include "forms/csrf.html.twig" %}
-    <div class="js-form-alerts" id="alerts-blog-create">
+    <div class="js-form-alerts" id="blog-alert">
     </div>
 	<div class="form-group has-feedback">
 		<label>Blog Title</label>
@@ -18,5 +18,9 @@
 		<label>Write Permission</label>
 		<input type="text" name="write_permission" id="write_permission" class="form-control" value="{{blog.write_p}}" readonly />
 	</div>
+	<input type="hidden" name="blog_id" value="{{blog.id}}" />
+	<input type="hidden" name="read_id" value="{{blog.read_id}}" />
+	<input type="hidden" name="write_id" value="{{blog.write_id}}" />
+	
 	<button class="btn btn-primary">{{form.submit}}</button>
 </form>
