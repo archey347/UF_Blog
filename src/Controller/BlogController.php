@@ -124,6 +124,26 @@ class BlogController extends SimpleController
 			return $response->withStatus(400);	
 		} else {
 			$perm = new Permission;
+			$perm->slug = $data['write_permission'];
+			$perm->name = "Edit Blog '".$data['blog_slug']."'";
+			$perm->conditions = "always()";
+			$perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
+			$perm->save();
+		}
+		
+		// Create Blog
+		$blog = new Blog;
+		
+		$blog->title = $data['blog_name'];
+		$blog->slug = $data['blog_slug'];
+		$blog->read_permission = $data['read_permission'];
+		$blog->write_permission = $data['write_permission'];
+		
+		$blog->save();
+		
+		$ms->addMessage('success', "Successfully added blog '".$data['blog_slug']."'.");
+		
+	}
 			$perm->slug = $data['read_permission'];
 			$perm->name = "Edit Blog '".$data['blog_slug']."'";
 			$perm->conditions = "always()";
