@@ -67,7 +67,8 @@ class BlogController extends SimpleController
                 [
                     "submit" => "Create Blog",
 					"action" => "blogs",
-					"method" => "POST"
+					"method" => "POST",
+					"id" => "create-blog"
                 ]
             ]
         );    
