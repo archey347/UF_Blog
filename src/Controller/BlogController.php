@@ -61,11 +61,6 @@ class BlogController extends SimpleController
     }
     
     public function getModalCreate(Request $request, Response $response, $args) {
-		$permissions = Permission::all();
-		$permissionOptions = array();
-		foreach($permissions as $permission) {
-			$permissionOptions[$permission['slug']] = $permission['name']. " (".$permission['slug'].")";
-		}
         return $this->ci->view->render($response, 'modals/blog.html.twig',
             [
                 "form" =>
