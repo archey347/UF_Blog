@@ -3,7 +3,7 @@
 $app->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin')
     ->add('authGuard');
 	
-$app->put('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog')
+$app->post('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog')
     ->add('authGuard');
 	
 
