@@ -39,8 +39,7 @@
 					},
 					msgTarget: $("#alerts-page")
 				});
-			});
-			$('body').on('renderSuccess.ufModal', function (data) {
+				$('body').on('renderSuccess.ufModal', function (data) {
 				
 					hasWritten = $('#blog_name').val().toLowerCase().replace(" ", "_") != $('#blog_slug').val();
 			
@@ -66,6 +65,26 @@
 						window.location.reload();
 					});
 				});
+			});
+			
+			el.find('.js-blog-delete').click(function() {
+					$("body").ufModal({
+						sourceUrl: site.uri.public + "/modals/blog/confirm-delete",
+						ajaxParams: {
+							slug: $(this).data('slug')
+						},
+						msgTarget: $("#alerts-page")
+					});
+					$('body').on('renderSuccess.ufModal', function (data) {
+					$("#blog-delete").ufForm({
+						validators: page.validators.confirmDeleteBlog,
+						msgTarget: $("#form-delete-blog-error")
+					}).on("submitSuccess.ufForm", function(event, data, textStatus, jqXHR) {
+						window.location.reload();
+					});
+				});
+			});
+			
 		}
 		
 		$(document).ready(function() {		
