@@ -1,5 +1,5 @@
 <?php
-
+// These need changing to REST standards
 $app->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin')
     ->add('authGuard');
 	
@@ -12,9 +12,16 @@ $app->put('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:update
 $app->delete('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:deleteBlog')
     ->add('authGuard');
 
+$app->group('/api', function () {
+	$this->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlogs');
 	
-$app->get('/api/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlogs')
-    ->add('authGuard');
+	$this->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlog');
+	
+	
+	
+    	
+})->add('authGuard');
+
 	
 $app->get('/modals/blog/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalCreate')
     ->add('authGuard');

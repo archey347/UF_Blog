@@ -362,4 +362,17 @@ class BlogController extends SimpleController
 		
 		$ms->addMessage('success', "Successfully deleted blog '$blog_slug'.");
 	}
+	
+	function getBlog(Request $request, Response $response, $args) {
+	
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		if ($blog == null) {
+			throw new NotFoundException($request, $response);	
+		}
+		
+		return $response->withJson($blog->toArray());
+	
+	}
 }
+
