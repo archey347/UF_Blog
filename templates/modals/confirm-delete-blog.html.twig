@@ -1,0 +1,18 @@
+{% extends "modals/modal.html.twig" %}
+
+{% block modal_title %}Delete Blog{% endblock %}
+
+{% block modal_body %}
+<form id="blog-delete" class="js-form" method="delete" action="{{site.uri.public}}/{{form.action}}">
+    {% include "forms/csrf.html.twig" %}
+    <div class="js-form-alerts" id="form-delete-blog-error">
+    </div>
+    <h4>Are you sure you want to delete '{{blog.slug}}' and all of its posts?<br><small>{{translate("DELETE_CANNOT_UNDONE")}}</small></h4>
+    <br>
+    <div class="btn-group-action">
+        <button type="submit" class="btn btn-danger btn-lg btn-block">Delete Blog</button>
+        <button type="button" class="btn btn-default btn-lg btn-block" data-dismiss="modal">{{translate("CANCEL")}}</button>
+    </div>
+    <input type="hidden" name="blog_id" value="{{blog.id}}" />
+</form>
+{% endblock %}
