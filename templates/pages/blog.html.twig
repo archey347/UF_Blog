@@ -1,0 +1,45 @@
+{% extends 'pages/abstract/dashboard.html.twig' %}
+
+{# Overrides blocks in head of base template #}
+{% block page_title %}Blogs | Manage Blog '{{blog.slug}}'{% endblock %}
+{% block page_description %}{% endblock %}
+
+{% block body_matter %}
+	<div id="postsTable" class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title pull-left"><i class="fa fa-fw fa-user"></i>Posts</h3>
+			{% include "tables/table-tool-menu.html.twig" %}
+		</div>
+		<div class="box-body">
+			{% include "tables/post-admin.html.twig" with {
+					"table" : {
+						"id" : "table-posts"
+					}
+				}
+			%}	
+		</div>
+		<div class="box-footer">
+			<button id="btn_create_blog" type="button" class="btn btn-success js-member-create">
+				<i class="fa fa-plus-square"></i>  Create Post
+			</button>
+		</div>
+	</div>
+	
+{% endblock %}
+{% block scripts_page %}
+    <script type="text/javascript">
+		{% include "pages/partials/page.js.twig" %}
+		
+		$(document).ready(function() {		
+			$("#postsTable").ufTable({
+				dataUrl: site.uri.public + "/api/blogs/b/{{blog.slug}}/posts"
+			});
+			
+			$("#blogTable").on("pagerComplete.ufTable", function () {
+			    //bindBlogButtons($(this));
+			});
+		});
+		
+	</script>
+
+{% endblock %}

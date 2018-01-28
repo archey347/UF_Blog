@@ -22,7 +22,7 @@ class Blog extends Model
 
     public function posts()
     {
-        return $this->hasMany('UserFrosting\Sprinkle\Blog\Database\Models\BlogPosts');
+        return $this->hasMany('UserFrosting\Sprinkle\Blog\Database\Models\BlogPost');
     }
     
     /**

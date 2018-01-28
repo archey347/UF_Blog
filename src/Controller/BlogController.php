@@ -10,12 +10,15 @@ use UserFrosting\Support\Exception\ForbiddenException;
 use UserFrosting\Sprinkle\Pastries\Database\Models\Pastry;
 use UserFrosting\Sprinkle\Core\Facades\Debug;
 use UserFrosting\Sprinkle\Blog\Sprunje\BlogSprunje;
+use UserFrosting\Sprinkle\Blog\Sprunje\PostSprunje;
 use UserFrosting\Sprinkle\Account\Database\Models\Permission;
 use UserFrosting\Fortress\Adapter\JqueryValidationAdapter;
 use UserFrosting\Fortress\RequestSchema;
 use UserFrosting\Fortress\ServerSideValidator;
 use UserFrosting\Fortress\RequestDataTransformer;
 use UserFrosting\Sprinkle\Blog\Database\Models\Blog;
+use UserFrosting\Sprinkle\Blog\Database\Models\BlogPost;
+
 
 class BlogController extends SimpleController
 {
@@ -373,6 +376,44 @@ class BlogController extends SimpleController
 		
 		return $response->withJson($blog->toArray());
 	
+	}
+	
+	function getSingleBlogAdmin(Request $request, Response $response, $args) {
+		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		if ($blog == null) {
+			throw new NotFoundException($request, $response);	
+		}
+		
+		//$delete_schema = new RequestSchema('schema://requests/confirm-delete-blog.yaml');
+		//$delete_validator = new JqueryValidationAdapter($delete_schema, $this->ci->translator);
+		
+		return $this->ci->view->render($response, 'pages/blog.html.twig', [
+			'blog' => $blog->toArray()
+		]);   
+			
+	}
+	
+	function getPosts(Request $request, Response $response, $args) {
+		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		if ($blog == null) {
+			throw new NotFoundException($request, $response);	
+		}
+		
+		// GET parameters
+        $params = $request->getQueryParams();
+
+        /** @var UserFrosting\Sprinkle\Core\Util\ClassMapper $classMapper */
+        $classMapper = $this->ci->classMapper;
+
+        $sprunje = new PostSprunje($classMapper, $params, $args['blog_slug']);
+
+        // Be careful how you consume this data - it has not been escaped and contains untrusted user-supplied content.
+        // For example, if you plan to insert it into an HTML DOM, you must escape it on the client side (or use client-side templating).
+        return $sprunje->toResponse($response); 
 	}
 }
 

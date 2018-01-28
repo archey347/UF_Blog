@@ -1,7 +1,14 @@
 <?php
 // These need changing to REST standards
-$app->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin')
-    ->add('authGuard');
+$app->group('/blogs', function() {
+	$this->get('', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin');
+	
+	$this->get('/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin');
+	
+	
+	
+})->add('authGuard');	
+
 	
 $app->post('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog')
     ->add('authGuard');
@@ -17,9 +24,7 @@ $app->group('/api', function () {
 	
 	$this->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlog');
 	
-	
-	
-    	
+	$this->get('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getPosts');	
 })->add('authGuard');
 
 	
