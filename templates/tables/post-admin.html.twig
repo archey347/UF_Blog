@@ -4,9 +4,10 @@
     <table id="{{table.id}}" class="tablesorter table table-bordered table-hover table-striped" data-sortlist="{{table.sortlist}}">
         <thead>
             <tr>
-                <th class="sorter-metatext" data-column-name="title" data-column-template="#post-table-col-title" data-priority="1">Post Title <i class="fa fa-sort"></i></th>
+                <th class="sorter-metatext" data-column-name="title" data-column-template="#post-table-col-title" data-priority="critical">Post Title <i class="fa fa-sort"></i></th>
 				<th class="sorter-metatext" data-column-name="author" data-column-template="#post-table-col-author" data-priority="3">Author <i class="fa fa-sort"></i></th>
 				<th class="sorter-metatext" data-column-name="last_updates_by" data-column-template="#post-table-col-last-updates-by" data-priority="2">Last Updated By <i class="fa fa-sort"></i></th>
+				<th class="sorter-metatext" data-column-template="#post-table-col-actions" data-priority="critical">Actions</i></th>
 			</tr>
         </thead>
         <tbody>
@@ -44,25 +45,15 @@
         </td>
     </script>
 	
-	<!--<script id="blog-table-column-actions" type="text/x-handlebars-template">
+	<script id="post-table-col-actions" type="text/x-handlebars-template">
 		<td>
 			<div class="btn-group">
-				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-					Actions
-					<span class="caret"></span>
+				<button type="button" class="btn btn-primary">
+					<i class="fa fa-edit"></i> Edit Post
 				</button>
-				<ul class="dropdown-menu dropdown-menu-right" role="menu">
-					<li>
-						<a href="#" data-slug="{{row.slug}}" class="js-blog-edit">
-						   <i class="fa fa-edit"></i> Edit blog
-						</a>
-					</li>
-					<li>
-						<a href="#" data-slug="{{row.slug}}" class="js-blog-delete">
-							<i class="fa fa-trash-o"></i> Delete blog
-						</a>
-					</li>
-				</ul>
+				<button type="button" class="btn btn-danger">
+					<i class="fa fa-trash-o"></i> Delete Post
+				</button>
 			</div>
 		</td>
     </script>-->
