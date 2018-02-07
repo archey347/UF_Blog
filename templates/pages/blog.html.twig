@@ -30,13 +30,51 @@
     <script type="text/javascript">
 		{% include "pages/partials/page.js.twig" %}
 		
+		function bindPostButtons(el) {
+			el.find('.js-edit-post').click(function() {
+				$("body").ufModal({
+					sourceUrl: site.uri.public + "/modals/blog/post/edit",
+					ajaxParams: {
+						slug: '{{blog.slug}}',
+						id: $(this).data('postId')
+					},
+					msgTarget: $("#alerts-page")
+				});
+				$('body').on('renderSuccess.ufModal', function (data) {	
+					$("#edit-post").ufForm({
+						validators: page.validators.postEdit,
+						msgTarget: $("#blog-alert")
+					}).on("submitSuccess.ufForm", function(event, data, textStatus, jqXHR) {
+						window.location.reload();
+					});
+				});	
+			});
+			el.find('.js-delete-post').click(function() {
+				$("body").ufModal({
+					sourceUrl: site.uri.public + "/modals/blog/post/delete",
+					ajaxParams: {
+						slug: '{{blog.slug}}',
+						id: $(this).data('postId')
+					},
+					msgTarget: $("#alerts-page")
+				});
+				$('body').on('renderSuccess.ufModal', function (data) {	
+					$("#post-delete").ufForm({
+						msgTarget: $("#blog-alert")
+					}).on("submitSuccess.ufForm", function(event, data, textStatus, jqXHR) {
+						window.location.reload();
+					});
+				});	
+			});	
+		}
+		
 		$(document).ready(function() {		
 			$("#postsTable").ufTable({
 				dataUrl: site.uri.public + "/api/blogs/b/{{blog.slug}}/posts"
 			});
 			
-			$("#blogTable").on("pagerComplete.ufTable", function () {
-			    //bindBlogButtons($(this));
+			$("#postsTable").on("pagerComplete.ufTable", function () {
+			    bindPostButtons($(this));
 			});
 			
 			$("#btn_create_post").click(function() {

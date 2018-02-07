@@ -389,11 +389,16 @@ class BlogController extends SimpleController
 		$create_post_schema = new RequestSchema('schema://requests/create-post.yaml');
 		$create_post_validator = new JqueryValidationAdapter($create_post_schema, $this->ci->translator);
 		
+		$edit_post_schema = new RequestSchema('schema://requests/edit-post.yaml');
+		$edit_post_validator = new JqueryValidationAdapter($edit_post_schema, $this->ci->translator);
+		
+		
 		return $this->ci->view->render($response, 'pages/blog.html.twig', [
 			'blog' => $blog->toArray(),
 			'page' => [
 				'validators' => [
-					'postCreate' => $create_post_validator->rules()
+					'postCreate' => $create_post_validator->rules(),
+					'postEdit' => $edit_post_validator->rules()
 				]
 			]
 		]);   
@@ -490,7 +495,192 @@ class BlogController extends SimpleController
 			"last_updates_by" => $this->ci->currentUser->id
 		]);
 		
-		$ms->addMessage('success', "Blog Post Created");
+		$ms->addMessage('success', "Blog post successfully created.");
+	}
+	
+	public function getModalPostEdit(Request $request, Response $response, $args) {
+		
+		$blog_slug = $request->getQueryParam('slug');
+		$post_id = $request->getQueryParam('id');
+		
+		
+		$ms = $this->ci->alerts;
+		
+		if($blog_slug == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		if($post_id == null) {
+			$ms->addMessage('danger', "No post assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		$blog = Blog::where('slug', $blog_slug)->first();
+
+		if(!$blog->count()) {
+			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
+			return $response->withStatus(404);
+		}
+		
+		$post = BlogPost::find($post_id);
+		
+		if($post == null) {
+			$ms->addMessage('danger', "Post Not Found");
+			return $response->withStatus(404);
+		}
+		
+        return $this->ci->view->render($response, 'modals/blog-post.html.twig',
+            [
+                "form" =>
+                [
+                    "submit" => "Edit Post",
+					"action" => "api/blogs/b/$blog_slug/posts/p/$post_id",
+					"method" => "PUT",
+					"id" => "edit-post"
+                ],
+				"post" =>
+				[
+					"title" => $post->title,
+					"content" => $post->content
+				]
+            ]
+        );    
+    }
+	
+	public function editPost(Request $request, Response $response, $args) {
+		
+		
+		$ms = $this->ci->alerts;
+		
+		if($args['blog_slug'] == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		if($args['post_id'] == null) {
+			$ms->addMessage('danger', "No post assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		// Get submitted data
+		$params = $request->getParsedBody();
+		
+		// Load the request schema
+		$schema = new RequestSchema('schema://requests/edit-post.yaml');
+		
+		// Whitelist and set parameter defaults
+		$transformer = new RequestDataTransformer($schema);
+		$data = $transformer->transform($params);
+		
+		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
+		$ms = $this->ci->alerts;
+		
+		$validator = new ServerSideValidator($schema, $this->ci->translator);
+		
+		// Add error messages and halt if validation failed
+		if (!$validator->validate($data)) {
+			$ms->addValidationErrors($validator);
+			return $response->withStatus(400);
+		}
+		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		if($blog == null) {
+			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
+			return $response->withStatus(400);	
+		}
+		
+		$post = BlogPost::find($args['post_id']);
+		
+		if($post == null) {
+			$ms->addMessage('danger', "Post Not Found");
+			return $response->withStatus(404);
+		}
+		
+		$post->title = $params['post_title'];
+		$post->content = $params['post_content'];
+		
+		$post->last_updates_by = $this->ci->currentUser->id;
+		
+		$post->save();
+		
+		$ms->addMessage('success', "Blog post successfully updated.");
+	}
+	
+	public function getModalPostDelete(Request $request, Response $response, $args) {
+		
+		$blog_slug = $request->getQueryParam('slug');
+		$post_id = $request->getQueryParam('id');
+		
+		
+		$ms = $this->ci->alerts;
+		
+		if($blog_slug == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		if($post_id == null) {
+			$ms->addMessage('danger', "No post assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		$blog = Blog::where('slug', $blog_slug)->first();
+
+		if(!$blog->count()) {
+			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
+			return $response->withStatus(404);
+		}
+		
+		$post = BlogPost::find($post_id);
+		
+		if($post == null) {
+			$ms->addMessage('danger', "Post Not Found");
+			return $response->withStatus(404);
+		}
+		
+        return $this->ci->view->render($response, 'modals/confirm-delete-post.html.twig',
+            [
+                "form" =>
+                [
+                    "submit" => "Delete Post",
+					"action" => "api/blogs/b/$blog_slug/posts/p/$post_id",
+					"method" => "DELETE",
+                ],
+				"post" =>
+				[
+					"title" => $post->title,
+					"content" => $post->content
+				]
+            ]
+        );    
+    }
+	
+	function deletePost(Request $request, Response $response, $args) {
+		$ms = $this->ci->alerts;
+		
+		if($args['blog_slug'] == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		if($args['post_id'] == null) {
+			$ms->addMessage('danger', "No post assigned to delete.");
+			return $response->withStatus(422);
+		}
+		
+		$post = BlogPost::find($args['post_id']);
+		
+		if($post == null) {
+			$ms->addMessage('danger', "Post not found.");
+			return $response->withStatus(404);	
+		}
+		
+		$post->delete();
+		
+		$ms->addMessage('success', "Successfully deleted post.");
+		
 	}
 }
 

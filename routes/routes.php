@@ -28,6 +28,9 @@ $app->group('/api', function () {
 	
 	$this->post('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createPost');
 	
+	$this->put('/blogs/b/{blog_slug}/posts/p/{post_id}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:editPost');
+	
+	$this->delete('/blogs/b/{blog_slug}/posts/p/{post_id}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:deletePost');
 	
 })->add('authGuard');
 
@@ -43,6 +46,8 @@ $app->group('/modals/blog', function () {
 		$this->get('/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostCreate');
 		
 		$this->get('/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostEdit');
+		
+		$this->get('/delete', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostDelete');
 		
 	});
 })->add('authGuard');
