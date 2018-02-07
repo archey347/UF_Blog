@@ -1,7 +1,14 @@
 <?php
+// These need changing to REST standards
+$app->group('/blogs', function() {
+	$this->get('', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin');
+	
+	$this->get('/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin');
+	
+	
+	
+})->add('authGuard');	
 
-$app->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin')
-    ->add('authGuard');
 	
 $app->post('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog')
     ->add('authGuard');
@@ -12,15 +19,35 @@ $app->put('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:update
 $app->delete('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:deleteBlog')
     ->add('authGuard');
 
+$app->group('/api', function () {
+	$this->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlogs');
 	
-$app->get('/api/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlogs')
-    ->add('authGuard');
+	$this->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlog');
 	
-$app->get('/modals/blog/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalCreate')
-    ->add('authGuard');
+	$this->get('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getPosts');
+	
+	$this->post('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createPost');
+	
+	$this->put('/blogs/b/{blog_slug}/posts/p/{post_id}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:editPost');
+	
+	$this->delete('/blogs/b/{blog_slug}/posts/p/{post_id}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:deletePost');
+	
+})->add('authGuard');
 
-$app->get('/modals/blog/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalEdit')
-    ->add('authGuard');
+$app->group('/modals/blog', function () {	
 
-$app->get('/modals/blog/confirm-delete', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalConfirmDelete')
-    ->add('authGuard');
+	$this->get('/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalCreate');
+	
+	$this->get('/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalEdit');
+	 
+	$this->get('/confirm-delete', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalConfirmDelete');
+	
+	$this->group('/post', function () {
+		$this->get('/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostCreate');
+		
+		$this->get('/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostEdit');
+		
+		$this->get('/delete', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostDelete');
+		
+	});
+})->add('authGuard');
