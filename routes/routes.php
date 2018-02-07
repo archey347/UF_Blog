@@ -24,15 +24,25 @@ $app->group('/api', function () {
 	
 	$this->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlog');
 	
-	$this->get('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getPosts');	
+	$this->get('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getPosts');
+	
+	$this->post('/blogs/b/{blog_slug}/posts', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createPost');
+	
+	
 })->add('authGuard');
 
+$app->group('/modals/blog', function () {	
+
+	$this->get('/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalCreate');
 	
-$app->get('/modals/blog/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalCreate')
-    ->add('authGuard');
-
-$app->get('/modals/blog/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalEdit')
-    ->add('authGuard');
-
-$app->get('/modals/blog/confirm-delete', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalConfirmDelete')
-    ->add('authGuard');
+	$this->get('/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalEdit');
+	 
+	$this->get('/confirm-delete', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalConfirmDelete');
+	
+	$this->group('/post', function () {
+		$this->get('/create', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostCreate');
+		
+		$this->get('/edit', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getModalPostEdit');
+		
+	});
+})->add('authGuard');

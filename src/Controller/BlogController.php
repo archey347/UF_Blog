@@ -386,11 +386,16 @@ class BlogController extends SimpleController
 			throw new NotFoundException($request, $response);	
 		}
 		
-		//$delete_schema = new RequestSchema('schema://requests/confirm-delete-blog.yaml');
-		//$delete_validator = new JqueryValidationAdapter($delete_schema, $this->ci->translator);
+		$create_post_schema = new RequestSchema('schema://requests/create-post.yaml');
+		$create_post_validator = new JqueryValidationAdapter($create_post_schema, $this->ci->translator);
 		
 		return $this->ci->view->render($response, 'pages/blog.html.twig', [
-			'blog' => $blog->toArray()
+			'blog' => $blog->toArray(),
+			'page' => [
+				'validators' => [
+					'postCreate' => $create_post_validator->rules()
+				]
+			]
 		]);   
 			
 	}
@@ -414,6 +419,78 @@ class BlogController extends SimpleController
         // Be careful how you consume this data - it has not been escaped and contains untrusted user-supplied content.
         // For example, if you plan to insert it into an HTML DOM, you must escape it on the client side (or use client-side templating).
         return $sprunje->toResponse($response); 
+	}
+	
+	public function getModalPostCreate(Request $request, Response $response, $args) {
+		
+		$blog_slug = $request->getQueryParam('blog_slug');
+		
+		$ms = $this->ci->alerts;
+		
+		if($blog_slug == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+        return $this->ci->view->render($response, 'modals/blog-post.html.twig',
+            [
+                "form" =>
+                [
+                    "submit" => "Create Post",
+					"action" => "api/blogs/b/$blog_slug/posts",
+					"method" => "POST",
+					"id" => "create-post"
+                ]
+            ]
+        );    
+    }
+	
+	public function createPost(Request $request, Response $response, $args) {
+		
+		
+		$ms = $this->ci->alerts;
+		
+		if($args['blog_slug'] == null) {
+			$ms->addMessage('danger', "No blog assigned to edit.");
+			return $response->withStatus(422);
+		}
+		
+		// Get submitted data
+		$params = $request->getParsedBody();
+		
+		// Load the request schema
+		$schema = new RequestSchema('schema://requests/create-post.yaml');
+		
+		// Whitelist and set parameter defaults
+		$transformer = new RequestDataTransformer($schema);
+		$data = $transformer->transform($params);
+		
+		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
+		$ms = $this->ci->alerts;
+		
+		$validator = new ServerSideValidator($schema, $this->ci->translator);
+		
+		// Add error messages and halt if validation failed
+		if (!$validator->validate($data)) {
+			$ms->addValidationErrors($validator);
+			return $response->withStatus(400);
+		}
+		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		if($blog == null) {
+			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
+			return $response->withStatus(400);	
+		}
+		
+		$blog->posts()->create([
+			"title" => $params['post_title'],
+			"content" => $params['post_content'],
+			"author" => $this->ci->currentUser->id,
+			"last_updates_by" => $this->ci->currentUser->id
+		]);
+		
+		$ms->addMessage('success', "Blog Post Created");
 	}
 }
 
