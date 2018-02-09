@@ -377,11 +377,13 @@ class BlogController extends SimpleController
 		}
 		
 		// Check that the permission exists
-		$perm = Permission::where('slug', $blog->read_permission)->first();
-		if ($perm == null) {
-			$ms->addMessage('warning', "Read Permission '{$blog->read_permission}' has already been deleted.");	
-		} else {
-			$perm->delete();
+		if(!$blog->public) {
+			$perm = Permission::where('slug', $blog->read_permission)->first();
+			if ($perm == null) {
+				$ms->addMessage('warning', "Read Permission '{$blog->read_permission}' has already been deleted.");	
+			} else {
+				$perm->delete();
+			}
 		}
 		
 		$perm = Permission::where('slug', $blog->write_permission)->first();
