@@ -2,12 +2,13 @@
 
 $app->group('/blogs', function() {
 	$this->get('', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin');
-	
-	
-
 })->add('authGuard');	
 
+$app->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin')
+	->add('authGuard');
 	
+$app->get('/blogs/b/{blog_slug}/view', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:genBlog')
+	->add('authGuard');
 
 
 $app->group('/api', function () {
@@ -15,7 +16,7 @@ $app->group('/api', function () {
 	
 	$this->post('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog');
 	
-	$this->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin');
+	
 
 	$this->put('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:updateBlog');
 		

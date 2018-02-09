@@ -19,7 +19,6 @@ use UserFrosting\Fortress\RequestDataTransformer;
 use UserFrosting\Sprinkle\Blog\Database\Models\Blog;
 use UserFrosting\Sprinkle\Blog\Database\Models\BlogPost;
 
-
 class BlogController extends SimpleController
 {
     public function displayBlogAdmin(Request $request, Response $response, $args)
@@ -679,6 +678,26 @@ class BlogController extends SimpleController
 		
 		$ms->addMessage('success', "Successfully deleted post.");
 		
+	}
+	
+	function genBlog(Request $request, Response $response, $args) {
+		$blog_slug = $args['blog_slug'];
+		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		$data = [
+					"blog" => $blog->toArray(),
+					"posts" => []
+		];
+		
+		$posts = BlogPost::where('blog_id', $blog->id)->orderBy('created_at', 'desc')->get();
+		
+		foreach($posts as $post) {
+			array_push($data['posts'], $post->toArray());
+		}
+		
+		
+		
+		return $this->ci->view->render($response, 'pages/blog-view.html.twig', $data);   
 	}
 }
 
