@@ -77,7 +77,7 @@ class BlogController extends SimpleController
                 "form" =>
                 [
                     "submit" => "Create Blog",
-					"action" => "blogs",
+					"action" => "api/blogs",
 					"method" => "POST",
 					"id" => "create-blog"
                 ]
@@ -179,7 +179,7 @@ class BlogController extends SimpleController
                 "form" =>
                 [
                     "submit" => "Update",
-					"action" => "blogs",
+					"action" => "api/blogs/b/$blog_slug",
 					"method" => "PUT",
 					"id" => "edit-blog"
                 ],
@@ -200,6 +200,13 @@ class BlogController extends SimpleController
 	public function updateBlog(Request $request, Response $response, $args) {
 		// Get submitted data
 		$params = $request->getParsedBody();
+		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
+		$ms = $this->ci->alerts;
+		
+		if(!isset($args['blog_slug'])) {
+			$ms->addMessage('danger', "No Blog set.");
+			return $response->withStatus(400);		
+		}
 		
 		// Load the request schema
 		$schema = new RequestSchema('schema://requests/edit-blog.yaml');
@@ -208,8 +215,7 @@ class BlogController extends SimpleController
 		$transformer = new RequestDataTransformer($schema);
 		$data = $transformer->transform($params);
 		
-		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
-		$ms = $this->ci->alerts;
+		
 		
 		$validator = new ServerSideValidator($schema, $this->ci->translator);
 		
@@ -220,19 +226,19 @@ class BlogController extends SimpleController
 		}
 		
 		// Check to make sure that the sent id is valid
-		$current_blog = Blog::find($data['blog_id']);
+		$current_blog = Blog::where('slug', $args['blog_slug'])->first();
 		if ($current_blog == null) {
 			$ms->addMessage('danger', "Blog not found.");
 			return $response->withStatus(400);	
 		}
 		
 		// Check if that blog name already exists and is not the blog currently being modified
-		$blog = Blog::where('slug', $data['blog_slug'])->first();
+		$blog = Blog::where('slug', $datas['blog_slug'])->first();
 		if ($blog != null && $blog->id != $current_blog->id) {
 			$ms->addMessage('danger', "Blog '".$data['blog_slug']."' already exists.");
 			return $response->withStatus(400);	
 		}
-		
+		$update_read_perm = false;
 		// Check that the permissions don't already exist
 		$perm = Permission::where('slug', $data['read_permission'])->first();
 		if ($perm != null && $perm->id != $data['read_id']) {
@@ -242,11 +248,7 @@ class BlogController extends SimpleController
 			if($perm == null) {
 				$perm = Permission::find($data['read_id']);	
 			}
-			$perm->slug = $data['read_permission'];
-			$perm->name = "View Blog '".$data['blog_slug']."'";
-			$perm->conditions = "always()";
-			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
-			$perm->save();
+			$update_read_perm = true;
 		}
 		
 		// Check that the permissions don't already exist
@@ -264,7 +266,13 @@ class BlogController extends SimpleController
 			$perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
 			$perm->save();	
 		}
-		
+		if($update_read_perm) {
+			$perm->slug = $data['read_permission'];
+			$perm->name = "View Blog '".$data['blog_slug']."'";
+			$perm->conditions = "always()";
+			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
+			$perm->save();
+		}
 		
 		
 		$current_blog->title = $data['blog_name'];
@@ -300,7 +308,7 @@ class BlogController extends SimpleController
             [
 				"form" =>
                 [
-					"action" => "blogs",
+					"action" => "api/blogs/b/$blog_slug",
                 ],
 				"blog" =>
 				[
@@ -320,27 +328,17 @@ class BlogController extends SimpleController
 		
 		// Get submitted data
 		$params = $request->getParsedBody();
-		
-		// Load the request schema
-		$schema = new RequestSchema('schema://requests/confirm-delete-blog.yaml');
-		
-		// Whitelist and set parameter defaults
-		$transformer = new RequestDataTransformer($schema);
-		$data = $transformer->transform($params);
-		
-		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
+	
 		$ms = $this->ci->alerts;
 		
-		$validator = new ServerSideValidator($schema, $this->ci->translator);
 		
-		// Add error messages and halt if validation failed
-		if (!$validator->validate($data)) {
-			$ms->addValidationErrors($validator);
-			return $response->withStatus(400);
+		if($args['blog_slug'] == null) {
+			$ms->addMessage('danger', "No Blog set.");
+			return $response->withStatus(400);		
 		}
 		
 		// Check if that blog name already exists
-		$blog = Blog::find($data['blog_id']);
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		if ($blog == null) {
 			$ms->addMessage('danger', "Blog selected to delete doesn't exist.");
 			return $response->withStatus(400);	
