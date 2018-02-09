@@ -7,8 +7,7 @@ $app->group('/blogs', function() {
 $app->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin')
 	->add('authGuard');
 	
-$app->get('/blogs/b/{blog_slug}/view', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:genBlog')
-	->add('authGuard');
+$app->get('/blogs/b/{blog_slug}/view', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:genBlog');
 
 
 $app->group('/api', function () {
