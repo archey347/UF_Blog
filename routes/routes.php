@@ -1,26 +1,26 @@
 <?php
-// These need changing to REST standards
+
 $app->group('/blogs', function() {
 	$this->get('', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:displayBlogAdmin');
-	
-	$this->get('/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin');
-	
-	
-	
 })->add('authGuard');	
 
+$app->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getSingleBlogAdmin')
+	->add('authGuard');
 	
-$app->post('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog')
-    ->add('authGuard');
+$app->get('/blogs/b/{blog_slug}/view', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:genBlog')
+	->add('authGuard');
 
-$app->put('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:updateBlog')
-    ->add('authGuard');
-	
-$app->delete('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:deleteBlog')
-    ->add('authGuard');
 
 $app->group('/api', function () {
 	$this->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlogs');
+	
+	$this->post('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:createBlog');
+	
+	
+
+	$this->put('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:updateBlog');
+		
+	$this->delete('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:deleteBlog');
 	
 	$this->get('/blogs/b/{blog_slug}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlog');
 	

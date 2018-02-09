@@ -1,8 +1,0 @@
-blog_id:
-  validators:
-    required:
-      message: No blog specified to edit.
-    integer:
-      message: Not a valid id.
-      
-      

@@ -31,14 +31,7 @@ write_permission:
     required:
       label: Write Permission
       message: Please enter a slug for the write permission.
-      
-blog_id:
-  validators:
-    required:
-      message: No blog specified to edit.
-    integer:
-      message: Not a valid id.
-      
+            
 read_id:
   validators:
     required:

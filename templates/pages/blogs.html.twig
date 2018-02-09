@@ -79,7 +79,6 @@
 					});
 					$('body').on('renderSuccess.ufModal', function (data) {
 					$("#blog-delete").ufForm({
-						validators: page.validators.confirmDeleteBlog,
 						msgTarget: $("#form-delete-blog-error")
 					}).on("submitSuccess.ufForm", function(event, data, textStatus, jqXHR) {
 						window.location.reload();
