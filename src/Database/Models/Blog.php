@@ -7,9 +7,11 @@ use UserFrosting\Sprinkle\Core\Database\Models\Model;
 
 class Blog extends Model
 {
-    /**
-     * @var string The name of the table for the current model.
-     */
+    public $dependencies = [
+        '\UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogPost',
+    ];
+    
+    
     protected $table = 'blogs';
     public $primaryKey = "id";
 
@@ -17,7 +19,8 @@ class Blog extends Model
         'slug',
         'title',
         'read_permission',
-        'write_permission'
+        'write_permission',
+        'public'
     ];
 
     public function posts()
