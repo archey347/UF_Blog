@@ -1,0 +1,14 @@
+<form id="{{form.id}}" class="js-form" method="{{form.method | default('POST')}}" action="{{site.uri.public}}/{{form.action}}">
+	{% include "forms/csrf.html.twig" %}
+    <div class="js-form-alerts" id="blog-alert">
+    </div>
+	<div class="form-group has-feedback">
+		<label>Post Title</label>
+		<input type="text" class="form-control" name="post_title" id="post_title" value="{{post.title}}">
+	</div>
+	<div class="form-group has-feedback">
+		<label>Post Content</label>
+		<textarea class="form-control" rows="10" name="post_content" id="post_content">{{post.content|raw}}</textarea>
+	</div>
+	<button class="btn btn-primary">{{form.submit}}</button>
+</form>
