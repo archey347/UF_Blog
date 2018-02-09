@@ -23,6 +23,16 @@ class BlogController extends SimpleController
 {
     public function displayBlogAdmin(Request $request, Response $response, $args)
     {
+		/** @var UserFrosting\Sprinkle\Account\Authorize\AuthorizationManager */
+        $authorizer = $this->ci->authorizer;
+
+        /** @var UserFrosting\Sprinkle\Account\Database\Models\User $currentUser */
+        $currentUser = $this->ci->currentUser;
+
+        // Access-controlled page
+        if ((!$authorizer->checkAccess($currentUser, 'uri_blog_manager_view')) and (!$authorizer->checkAccess($currentUser, 'uri_blog_manager'))) {
+            throw new ForbiddenException();
+        }
 		
 		$create_schema = new RequestSchema('schema://requests/create-blog.yaml');
 		$create_validator = new JqueryValidationAdapter($create_schema, $this->ci->translator);
@@ -45,7 +55,7 @@ class BlogController extends SimpleController
     }
     
     public function getBlogs(Request $request, Response $response, $args)
-    {
+    {	
         // GET parameters
         $params = $request->getQueryParams();
 
@@ -56,7 +66,7 @@ class BlogController extends SimpleController
         $currentUser = $this->ci->currentUser;
 
         // Access-controlled page
-        if (!$authorizer->checkAccess($currentUser, 'uri_blog_manager')) {
+        if ((!$authorizer->checkAccess($currentUser, 'uri_blog_manager_view')) and (!$authorizer->checkAccess($currentUser, 'uri_blog_manager'))) {
             throw new ForbiddenException();
         }
 
@@ -71,6 +81,7 @@ class BlogController extends SimpleController
     }
     
     public function getModalCreate(Request $request, Response $response, $args) {
+		$this->checkAccess('uri_blog_manager');
         return $this->ci->view->render($response, 'modals/blog.html.twig',
             [
                 "form" =>
@@ -85,8 +96,12 @@ class BlogController extends SimpleController
     }
 	
 	public function createBlog(Request $request, Response $response, $args) {
+		$this->checkAccess('uri_blog_manager');
+		
 		// Get submitted data
 		$params = $request->getParsedBody();
+		
+		
 		
 		// Load the request schema
 		$schema = new RequestSchema('schema://requests/create-blog.yaml');
@@ -112,20 +127,17 @@ class BlogController extends SimpleController
 			$ms->addMessage('danger', "Blog '".$data['blog_slug']."' already exists.");
 			return $response->withStatus(400);	
 		}
-		
-		// Check that the permissions don't already exist
-		$perms = Permission::where('slug', $data['read_permission'])->get();
-		if ($blogs->count()) {
-			$ms->addMessage('danger', "Read Permission '".$data['read_permission']."' already exists.");
-			return $response->withStatus(400);	
-		} else {
-			// If it doesn't exist, then create it
-			$perm = new Permission;
-			$perm->slug = $data['read_permission'];
-			$perm->name = "View Blog '".$data['blog_slug']."'";
-			$perm->conditions = "always()";
-			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
-			$perm->save();
+		$createReadPermission = false;
+		if($data['public'] == 0) {
+			// Check that the permissions don't already exist
+			$perms = Permission::where('slug', $data['read_permission'])->get();
+			if ($perms->count()) {
+				$ms->addMessage('danger', "Read Permission '".$data['read_permission']."' already exists.");
+				return $response->withStatus(400);	
+			} else {
+				// If it doesn't exist, then create it
+				$createReadPermission = true;
+			}
 		}
 		
 		$perms = Permission::where('slug', $data['write_permission'])->get();
@@ -141,14 +153,23 @@ class BlogController extends SimpleController
 			$perm->save();
 		}
 		
+		if($createReadPermission) {
+			$perm = new Permission;
+			$perm->slug = $data['read_permission'];
+			$perm->name = "View Blog '".$data['blog_slug']."'";
+			$perm->conditions = "always()";
+			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
+			$perm->save();
+		}
+		
 		// Create Blog
 		$blog = new Blog;
 		
 		$blog->title = $data['blog_name'];
 		$blog->slug = $data['blog_slug'];
-		$blog->read_permission = $data['read_permission'];
+		$blog->read_permission = $data['public'] == 1 ? "" : $data['read_permission'];
 		$blog->write_permission = $data['write_permission'];
-		
+		$blog->public = $data['public'] == 1;
 		$blog->save();
 		
 		$ms->addMessage('success', "Successfully added blog '".$data['blog_slug']."'.");
@@ -156,7 +177,7 @@ class BlogController extends SimpleController
 	}
 	
 	public function getModalEdit(Request $request, Response $response, $args) {
-		
+		$this->checkAccess('uri_blog_manager');
 		$blog_slug = $request->getQueryParam('slug');
 		
 		$ms = $this->ci->alerts;
@@ -189,6 +210,7 @@ class BlogController extends SimpleController
 					"name" => $blog->title,
 					"read_p" => $blog->read_permission,
 					"write_p" => $blog->write_permission,
+					"public" => $blog->public,
 					"read_id" => Permission::where('slug', $blog->read_permission)->first()->id,
 					"write_id" => Permission::where('slug', $blog->write_permission)->first()->id
 				]
@@ -197,6 +219,7 @@ class BlogController extends SimpleController
     }
 	
 	public function updateBlog(Request $request, Response $response, $args) {
+		$this->checkAccess('uri_blog_manager');
 		// Get submitted data
 		$params = $request->getParsedBody();
 		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
@@ -238,46 +261,70 @@ class BlogController extends SimpleController
 			return $response->withStatus(400);	
 		}
 		$update_read_perm = false;
+		$delete_read_perm = false;
+		$create_read_perm = false;
+		if($current_blog['public'] == false && $data['public'] == 1) {
+			$delete_read_perm = true;
+		}
 		// Check that the permissions don't already exist
-		$perm = Permission::where('slug', $data['read_permission'])->first();
-		if ($perm != null && $perm->id != $data['read_id']) {
+		$read_perm = Permission::where('slug', $data['read_permission'])->first();
+		if ($read_perm != null && $read_perm->id != $data['read_id']) {
 			$ms->addMessage('danger', "Read Permission '".$data['read_permission']."' already exists.");
 			return $response->withStatus(400);	
 		} else {
-			if($perm == null) {
-				$perm = Permission::find($data['read_id']);	
+			if($read_perm == null) {
+				$read_perm = Permission::find($data['read_id']);	
 			}
-			$update_read_perm = true;
+			if($read_perm == null) {
+				$create_read_perm = true;
+			} else {
+				$update_read_perm = true;	
+			}
+			
 		}
 		
 		// Check that the permissions don't already exist
-		$perm = Permission::where('slug', $data['write_permission'])->first();
-		if ($perm != null && $perm->id != $data['write_id']) {
+		$write_perm = Permission::where('slug', $data['write_permission'])->first();
+		if ($write_perm != null && $perm->id != $data['write_id']) {
 			$ms->addMessage('danger', "Write Permission '".$data['write_permission']."' already exists.");
 			return $response->withStatus(400);	
 		} else {
-			if($perm == null) {
-				$perm = Permission::find($data['write_id']);
+			if($write_perm == null) {
+				$write_perm = Permission::find($data['write_id']);
 			}
-			$perm->slug = $data['write_permission'];
-			$perm->name = "Edit Blog '".$data['blog_slug']."'";
-			$perm->conditions = "always()";
-			$perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
-			$perm->save();	
+			$write_perm->slug = $data['write_permission'];
+			$write_perm->name = "Edit Blog '".$data['blog_slug']."'";
+			$write_perm->conditions = "always()";
+			$write_perm->description = "Gives write access to the '".$data['blog_slug']."' blog.";
+			$write_perm->save();	
+		}
+		if($create_read_perm) {
+			$read_perm = new Permission;
+			$read_perm->slug = $data['read_permission'];
+			$read_perm->name = "View Blog '".$data['blog_slug']."'";
+			$read_perm->conditions = "always()";
+			$read_perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
+			$read_perm->save();	
 		}
 		if($update_read_perm) {
-			$perm->slug = $data['read_permission'];
-			$perm->name = "View Blog '".$data['blog_slug']."'";
-			$perm->conditions = "always()";
-			$perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
-			$perm->save();
+			$read_perm->slug = $data['read_permission'];
+			$read_perm->name = "View Blog '".$data['blog_slug']."'";
+			$read_perm->conditions = "always()";
+			$read_perm->description = "Gives read access to the '".$data['blog_slug']."' blog.";
+			$read_perm->save();
+		}
+		if($delete_read_perm) {
+			$read_perm->delete();
 		}
 		
 		
 		$current_blog->title = $data['blog_name'];
 		$current_blog->slug = $data['blog_slug'];
-		$current_blog->read_permission = $data['read_permission'];
+		
+		$current_blog->read_permission = $data['public'] == 1 ? "" : $data['read_permission'];
 		$current_blog->write_permission = $data['write_permission'];
+		
+		$current_blog->public = $data['public'];
 		
 		$current_blog->save();
 		
@@ -286,7 +333,7 @@ class BlogController extends SimpleController
 	}
     
 	public function getModalConfirmDelete(Request $request, Response $response, $args) {
-		
+		$this->checkAccess('uri_blog_manager');
 		$blog_slug = $request->getQueryParam('slug');
 		
 		$ms = $this->ci->alerts;
@@ -324,7 +371,7 @@ class BlogController extends SimpleController
     }
 	
 	public function deleteBlog(Request $request, Response $response, $args) {
-		
+		$this->checkAccess('uri_blog_manager');
 		// Get submitted data
 		$params = $request->getParsedBody();
 	
@@ -344,11 +391,13 @@ class BlogController extends SimpleController
 		}
 		
 		// Check that the permission exists
-		$perm = Permission::where('slug', $blog->read_permission)->first();
-		if ($perm == null) {
-			$ms->addMessage('warning', "Read Permission '{$blog->read_permission}' has already been deleted.");	
-		} else {
-			$perm->delete();
+		if(!$blog->public) {
+			$perm = Permission::where('slug', $blog->read_permission)->first();
+			if ($perm == null) {
+				$ms->addMessage('warning', "Read Permission '{$blog->read_permission}' has already been deleted.");	
+			} else {
+				$perm->delete();
+			}
 		}
 		
 		$perm = Permission::where('slug', $blog->write_permission)->first();
@@ -364,9 +413,9 @@ class BlogController extends SimpleController
 	}
 	
 	function getBlog(Request $request, Response $response, $args) {
-	
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		$this->checkAccess($blog->read_permission);
 		if ($blog == null) {
 			throw new NotFoundException($request, $response);	
 		}
@@ -378,6 +427,8 @@ class BlogController extends SimpleController
 	function getSingleBlogAdmin(Request $request, Response $response, $args) {
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		$this->checkAccess($blog->read_permission);
 		
 		if ($blog == null) {
 			throw new NotFoundException($request, $response);	
@@ -405,6 +456,8 @@ class BlogController extends SimpleController
 	function getPosts(Request $request, Response $response, $args) {
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		$this->checkAccess($blog->read_permission);
 		
 		if ($blog == null) {
 			throw new NotFoundException($request, $response);	
@@ -434,7 +487,16 @@ class BlogController extends SimpleController
 			return $response->withStatus(422);
 		}
 		
-        return $this->ci->view->render($response, 'modals/blog-post.html.twig',
+        $blog = Blog::where('slug', $blog_slug)->first();
+		
+		if($blog == null) {
+			$ms->addMessage('danger', "Blog '$blog_slug' doesn't exist.");
+			return $response->withStatus(400);
+		}
+		
+		$this->checkAccess($blog->write_access);
+		
+		return $this->ci->view->render($response, 'modals/blog-post.html.twig',
             [
                 "form" =>
                 [
@@ -480,6 +542,8 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
+		checkAccess($blog->write_permission);
+		
 		if($blog == null) {
 			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
 			return $response->withStatus(400);	
@@ -514,6 +578,8 @@ class BlogController extends SimpleController
 		}
 		
 		$blog = Blog::where('slug', $blog_slug)->first();
+		
+		$this->checkAccess($blog->write_permission);
 
 		if(!$blog->count()) {
 			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
@@ -583,6 +649,8 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
+		checkAccess($blog->write_permission);
+		
 		if($blog == null) {
 			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
 			return $response->withStatus(400);	
@@ -624,6 +692,8 @@ class BlogController extends SimpleController
 		}
 		
 		$blog = Blog::where('slug', $blog_slug)->first();
+		
+		$this->checkAccess($blog->write_access);
 
 		if(!$blog->count()) {
 			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
@@ -662,6 +732,10 @@ class BlogController extends SimpleController
 			return $response->withStatus(422);
 		}
 		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		checkAccess($blog->write_permission);
+		
 		if($args['post_id'] == null) {
 			$ms->addMessage('danger', "No post assigned to delete.");
 			return $response->withStatus(422);
@@ -684,6 +758,11 @@ class BlogController extends SimpleController
 		$blog_slug = $args['blog_slug'];
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		if(!$blog->public) {
+			$this->checkAccess($blog->read_permission);
+		}
+		
 		$data = [
 					"blog" => $blog->toArray(),
 					"posts" => []
@@ -698,6 +777,15 @@ class BlogController extends SimpleController
 		
 		
 		return $this->ci->view->render($response, 'pages/blog-view.html.twig', $data);   
+	}
+	function checkAccess($perm_slug) {
+		$authorizer = $this->ci->authorizer;
+
+		$currentUser = $this->ci->currentUser;
+		
+		if (!$authorizer->checkAccess($currentUser, $perm_slug)) {
+			throw new ForbiddenException();
+		}
 	}
 }
 

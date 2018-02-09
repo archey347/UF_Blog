@@ -2,7 +2,9 @@
 
 {% block navigation %}
     {{ parent() }}
+    {% if (checkAccess('uri_blog_manager') or checkAccess('uri_blog_manager_view')) %}
     <li>
         <a href="/blogs"><i class="fa fa-rss-square fa-fw"></i> <span>Blogs</span></a>
     </li>
+    {%endif%}
 {% endblock %}

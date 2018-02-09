@@ -73,6 +73,10 @@
 			  </div>
 			</div>
 		{%endfor%}
+		
+		{% if posts|length == 0 %}
+		No posts to show :(
+		{% endif %}
 		<!-- Javascript configuration -->
         <script>
 			{% include "pages/partials/config.js.twig" %}

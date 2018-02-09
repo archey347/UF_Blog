@@ -22,6 +22,12 @@ class CustomPermissions extends Migration
                 'name' => 'Blog Manager',
                 'conditions' => 'always()',
                 'description' => 'Allows creating and managing of blogs.'
+            ]),
+			'uri_blog_manager_view' => new Permission([
+                'slug' => 'uri_blog_manager_view',
+                'name' => 'View Blog Manager',
+                'conditions' => 'always()',
+                'description' => 'Allows access to view the blogs in settings.'
             ])
         ];
 
@@ -38,8 +44,8 @@ class CustomPermissions extends Migration
         $roleAdmin = Role::where('slug', 'site-admin')->first();
         if ($roleAdmin) {
             $roleAdmin->permissions()->syncWithoutDetaching([
-                $permissions['uri_members']->id,
-                $permissions['uri_owls']->id
+                $permissions['uri_blog_manager']->id,
+                $permissions['uri_blog_manager_view']->id
             ]);
         }
     }

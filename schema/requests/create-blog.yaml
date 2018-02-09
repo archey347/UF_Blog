@@ -32,4 +32,5 @@ write_permission:
       label: Write Permission
       message: Please enter a slug for the write permission.
       
+public:
 

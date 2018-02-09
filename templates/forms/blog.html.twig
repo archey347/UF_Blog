@@ -10,7 +10,12 @@
 		<label>Blog Slug</label>
 		<input type="text" class="form-control" name="blog_slug" id="blog_slug" value="{{blog.slug}}">
 	</div>
-	<div class="form-group has-feedback">
+	<div class="checkbox icheck">
+        <label>
+            <input type="checkbox" class="js-icheck" name="public" id="public" {%if blog.public %}checked{%endif%}> Public Blog
+        </label>
+    </div>
+	<div class="form-group has-feedback" id="read_permission_container">
 		<label>Read Permission</label>
 		<input type="text" name="read_permission" id="read_permission" class="form-control" value="{{blog.read_p}}" readonly />
 	</div>
