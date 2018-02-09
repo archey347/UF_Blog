@@ -23,6 +23,16 @@ class BlogController extends SimpleController
 {
     public function displayBlogAdmin(Request $request, Response $response, $args)
     {
+		/** @var UserFrosting\Sprinkle\Account\Authorize\AuthorizationManager */
+        $authorizer = $this->ci->authorizer;
+
+        /** @var UserFrosting\Sprinkle\Account\Database\Models\User $currentUser */
+        $currentUser = $this->ci->currentUser;
+
+        // Access-controlled page
+        if ((!$authorizer->checkAccess($currentUser, 'uri_blog_manager_view')) and (!$authorizer->checkAccess($currentUser, 'uri_blog_manager'))) {
+            throw new ForbiddenException();
+        }
 		
 		$create_schema = new RequestSchema('schema://requests/create-blog.yaml');
 		$create_validator = new JqueryValidationAdapter($create_schema, $this->ci->translator);
@@ -45,7 +55,7 @@ class BlogController extends SimpleController
     }
     
     public function getBlogs(Request $request, Response $response, $args)
-    {
+    {	
         // GET parameters
         $params = $request->getQueryParams();
 
@@ -56,7 +66,7 @@ class BlogController extends SimpleController
         $currentUser = $this->ci->currentUser;
 
         // Access-controlled page
-        if (!$authorizer->checkAccess($currentUser, 'uri_blog_manager')) {
+        if ((!$authorizer->checkAccess($currentUser, 'uri_blog_manager_view')) and (!$authorizer->checkAccess($currentUser, 'uri_blog_manager'))) {
             throw new ForbiddenException();
         }
 
@@ -71,6 +81,7 @@ class BlogController extends SimpleController
     }
     
     public function getModalCreate(Request $request, Response $response, $args) {
+		$this->checkAccess('uri_blog_manager');
         return $this->ci->view->render($response, 'modals/blog.html.twig',
             [
                 "form" =>
@@ -85,6 +96,8 @@ class BlogController extends SimpleController
     }
 	
 	public function createBlog(Request $request, Response $response, $args) {
+		$this->checkAccess('uri_blog_manager');
+		
 		// Get submitted data
 		$params = $request->getParsedBody();
 		
@@ -164,7 +177,7 @@ class BlogController extends SimpleController
 	}
 	
 	public function getModalEdit(Request $request, Response $response, $args) {
-		
+		$this->checkAccess('uri_blog_manager');
 		$blog_slug = $request->getQueryParam('slug');
 		
 		$ms = $this->ci->alerts;
@@ -206,6 +219,7 @@ class BlogController extends SimpleController
     }
 	
 	public function updateBlog(Request $request, Response $response, $args) {
+		$this->checkAccess('uri_blog_manager');
 		// Get submitted data
 		$params = $request->getParsedBody();
 		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
@@ -319,7 +333,7 @@ class BlogController extends SimpleController
 	}
     
 	public function getModalConfirmDelete(Request $request, Response $response, $args) {
-		
+		$this->checkAccess('uri_blog_manager');
 		$blog_slug = $request->getQueryParam('slug');
 		
 		$ms = $this->ci->alerts;
@@ -357,7 +371,7 @@ class BlogController extends SimpleController
     }
 	
 	public function deleteBlog(Request $request, Response $response, $args) {
-		
+		$this->checkAccess('uri_blog_manager');
 		// Get submitted data
 		$params = $request->getParsedBody();
 	
@@ -399,9 +413,9 @@ class BlogController extends SimpleController
 	}
 	
 	function getBlog(Request $request, Response $response, $args) {
-	
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		$this->checkAccess($blog->read_permission);
 		if ($blog == null) {
 			throw new NotFoundException($request, $response);	
 		}
@@ -413,6 +427,8 @@ class BlogController extends SimpleController
 	function getSingleBlogAdmin(Request $request, Response $response, $args) {
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		$this->checkAccess($blog->read_permission);
 		
 		if ($blog == null) {
 			throw new NotFoundException($request, $response);	
@@ -440,6 +456,8 @@ class BlogController extends SimpleController
 	function getPosts(Request $request, Response $response, $args) {
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		$this->checkAccess($blog->read_permission);
 		
 		if ($blog == null) {
 			throw new NotFoundException($request, $response);	
@@ -469,7 +487,16 @@ class BlogController extends SimpleController
 			return $response->withStatus(422);
 		}
 		
-        return $this->ci->view->render($response, 'modals/blog-post.html.twig',
+        $blog = Blog::where('slug', $blog_slug)->first();
+		
+		if($blog == null) {
+			$ms->addMessage('danger', "Blog '$blog_slug' doesn't exist.");
+			return $response->withStatus(400);
+		}
+		
+		$this->checkAccess($blog->write_access);
+		
+		return $this->ci->view->render($response, 'modals/blog-post.html.twig',
             [
                 "form" =>
                 [
@@ -515,6 +542,8 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
+		checkAccess($blog->write_permission);
+		
 		if($blog == null) {
 			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
 			return $response->withStatus(400);	
@@ -549,6 +578,8 @@ class BlogController extends SimpleController
 		}
 		
 		$blog = Blog::where('slug', $blog_slug)->first();
+		
+		$this->checkAccess($blog->write_permission);
 
 		if(!$blog->count()) {
 			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
@@ -618,6 +649,8 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
+		checkAccess($blog->write_permission);
+		
 		if($blog == null) {
 			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
 			return $response->withStatus(400);	
@@ -659,6 +692,8 @@ class BlogController extends SimpleController
 		}
 		
 		$blog = Blog::where('slug', $blog_slug)->first();
+		
+		$this->checkAccess($blog->write_access);
 
 		if(!$blog->count()) {
 			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
@@ -697,6 +732,10 @@ class BlogController extends SimpleController
 			return $response->withStatus(422);
 		}
 		
+		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		
+		checkAccess($blog->write_permission);
+		
 		if($args['post_id'] == null) {
 			$ms->addMessage('danger', "No post assigned to delete.");
 			return $response->withStatus(422);
@@ -721,8 +760,7 @@ class BlogController extends SimpleController
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
 		if(!$blog->public) {
-			return $response->withJson($blog->toJson);
-			//$this->checkAccess($blog->);
+			$this->checkAccess($blog->read_permission);
 		}
 		
 		$data = [
@@ -744,7 +782,6 @@ class BlogController extends SimpleController
 		$authorizer = $this->ci->authorizer;
 
 		$currentUser = $this->ci->currentUser;
-		
 		
 		if (!$authorizer->checkAccess($currentUser, $perm_slug)) {
 			throw new ForbiddenException();

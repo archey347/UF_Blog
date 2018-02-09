@@ -55,6 +55,9 @@
 						   <i class="fa fa-eye"></i> Preview Blog
 						</a>
 					</li>
+					{% endverbatim %}
+					{% if checkAccess('uri_blog_manager') %}
+					{% verbatim %}
 					<li>
 						<a href="#" data-slug="{{row.slug}}" class="js-blog-edit">
 						   <i class="fa fa-edit"></i> Edit blog
@@ -65,6 +68,9 @@
 							<i class="fa fa-trash-o"></i> Delete blog
 						</a>
 					</li>
+					{% endverbatim %}
+					{% endif %}
+					{% verbatim %}
 				</ul>
 			</div>
 		</td>
