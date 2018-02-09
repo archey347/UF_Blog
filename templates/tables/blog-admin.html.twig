@@ -29,7 +29,7 @@
 	<script id="blog-table-column-read-perm" type="text/x-handlebars-template">
         <td data-text="{{row.slug}}">
             <strong>
-                {{row.read_permission}}
+                {{#if row.public}}Public{{else}}{{row.read_permission}}{{/if}}
             </strong>
         </td>
     </script>
