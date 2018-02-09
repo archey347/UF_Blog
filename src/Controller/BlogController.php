@@ -542,7 +542,7 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
-		checkAccess($blog->write_permission);
+		$this->checkAccess($blog->write_permission);
 		
 		if($blog == null) {
 			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
@@ -649,7 +649,7 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
-		checkAccess($blog->write_permission);
+		$this->checkAccess($blog->write_permission);
 		
 		if($blog == null) {
 			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
@@ -734,7 +734,7 @@ class BlogController extends SimpleController
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
-		checkAccess($blog->write_permission);
+		$this->checkAccess($blog->write_permission);
 		
 		if($args['post_id'] == null) {
 			$ms->addMessage('danger', "No post assigned to delete.");
