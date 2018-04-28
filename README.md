@@ -32,7 +32,15 @@ composer update
 ```bash
 php bakery migrate
 ```
-*If an error comes up about foreign keys, try re-running the command*
+5.
+
+If you have multiple sprinkles, you may need to change the side menu twig template.
+
+To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the directory in the first line so that it extends the side menu template in one of the sprinkles rather than the main admin sprinkle.
+
+## Blog Formatting
+
+To change the formatting of the blog, edit the twig template at `templates/pages/blog-view.html.twig`.
 
 ## Permissions
 
