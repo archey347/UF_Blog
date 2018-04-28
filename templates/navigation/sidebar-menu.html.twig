@@ -1,10 +1,10 @@
-{% extends '@site/navigation/sidebar-menu.html.twig' %}
+{% extends '@admin/navigation/sidebar-menu.html.twig' %}
 
 {% block navigation %}
     {{ parent() }}
     {% if (checkAccess('uri_blog_manager') or checkAccess('uri_blog_manager_view')) %}
     <li>
-        <a href="/blogs"><i class="fa fa-rss-square fa-fw"></i> <span>Blogs</span></a>
+        <a href="{{site.uri.public}}/blogs"><i class="fa fa-rss-square fa-fw"></i> <span>Blogs</span></a>
     </li>
     {%endif%}
 {% endblock %}

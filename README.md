@@ -22,7 +22,13 @@ git clone https://github.com/archey347/userfrosting-blog.git blog
 }
 ```
 
-3. Run the bakery migration. Go to the root folder of your Userfrosting instance in a command line and run:
+3.
+Run Composer Update **(Not As Root)**
+```
+composer update
+```
+
+4. Run the bakery migration. Go to the root folder of your Userfrosting instance in a command line and run:
 ```bash
 php bakery migrate
 ```
