@@ -22,8 +22,8 @@ git clone https://github.com/archey347/userfrosting-blog.git blog
 }
 ```
 
-3.
-Run Composer Update **(Not As Root)**
+3. Run Composer Update **(Not As Root)**
+
 ```
 composer update
 ```
@@ -32,9 +32,7 @@ composer update
 ```bash
 php bakery migrate
 ```
-5.
-
-If you have multiple sprinkles, you may need to change the side menu twig template.
+5. If you have multiple sprinkles, you may need to change the side menu twig template.
 
 To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the directory in the first line so that it extends the side menu template in one of the sprinkles rather than the main admin sprinkle.
 
