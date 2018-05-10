@@ -36,6 +36,16 @@ php bakery migrate
 
 To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the directory in the first line so that it extends the side menu template in one of the sprinkles rather than the main admin sprinkle.
 
+## Using The Blog
+
+The blog can be included into a webpage using an iframe, like below:
+
+```
+<iframe src="https://{{site.uri.public}}/blogs/b/{blog_slug}/view"></iframe>
+```
+
+Make sure to replace `{blog_slug}` with the blog you want to display.
+
 ## Blog Formatting
 
 To change the formatting of the blog, edit the twig template at `templates/pages/blog-view.html.twig`.
