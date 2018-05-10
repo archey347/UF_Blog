@@ -40,7 +40,7 @@ To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the dire
 
 The blog can be included into a webpage using an iframe, like below:
 
-```
+```html
 <iframe src="https://{{site.uri.public}}/blogs/b/{blog_slug}/view"></iframe>
 ```
 
