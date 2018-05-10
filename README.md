@@ -41,10 +41,10 @@ To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the dire
 The blog can be included into a webpage using an iframe, like below:
 
 ```html
-<iframe src="https://{{site.uri.public}}/blogs/b/{blog_slug}/view"></iframe>
+<iframe src="https://{{site.uri.public}}/blogs/b/{{blog_slug}}/view"></iframe>
 ```
 
-Make sure to replace `{blog_slug}` with the blog you want to display.
+Make sure to replace `{{blog_slug}}` with the blog you want to display, or define it as a variable when you call the twig template engine on the main page.
 
 ## Blog Formatting
 
