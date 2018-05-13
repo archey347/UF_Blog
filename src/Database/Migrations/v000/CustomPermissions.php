@@ -13,40 +13,52 @@ class CustomPermissions extends Migration
         '\UserFrosting\Sprinkle\Account\Database\Migrations\v400\RolesTable'
     ];
 
-    public function seed()
+    public function up()
     {
         // Add default permissions
-        $permissions = [
-            'uri_blog_manager' => new Permission([
-                'slug' => 'uri_blog_manager',
-                'name' => 'Blog Manager',
-                'conditions' => 'always()',
-                'description' => 'Allows creating and managing of blogs.'
-            ]),
-			'uri_blog_manager_view' => new Permission([
-                'slug' => 'uri_blog_manager_view',
-                'name' => 'View Blog Manager',
-                'conditions' => 'always()',
-                'description' => 'Allows access to view the blogs in settings.'
-            ])
-        ];
+      $permissions = $this->permissions();
 
         foreach ($permissions as $id => $permission) {
             $slug = $permission->slug;
             $conditions = $permission->conditions;
+            $roleAdmin = Role::where('slug', 'site-admin')->first();
             // Skip if a permission with the same slug and conditions has already been added
             if (!Permission::where('slug', $slug)->where('conditions', $conditions)->first()) {
                 $permission->save();
+                if ($roleAdmin) {
+                    $roleAdmin->permissions()->syncWithoutDetaching([
+                        $permission->id
+                    ]);
+                }
             }
         }
-		
-		// Automatically add permissions to particular roles
-        $roleAdmin = Role::where('slug', 'site-admin')->first();
-        if ($roleAdmin) {
-            $roleAdmin->permissions()->syncWithoutDetaching([
-                $permissions['uri_blog_manager']->id,
-                $permissions['uri_blog_manager_view']->id
-            ]);
+    }
+
+    public function down()
+    {
+        $permissions = $this->permissions();
+        foreach ($permissions as $id => $permissionInfo) {
+            $permission = Permission::where("slug", $permissionInfo['slug'])->first();
+            $permission->delete();
         }
+    }
+
+    public function permissions()
+    {
+      $permissions = [
+          'uri_blog_manager' => new Permission([
+              'slug' => 'uri_blog_manager',
+              'name' => 'Blog Manager',
+              'conditions' => 'always()',
+              'description' => 'Allows creating and managing of blogs.'
+          ]),
+    'uri_blog_manager_view' => new Permission([
+              'slug' => 'uri_blog_manager_view',
+              'name' => 'View Blog Manager',
+              'conditions' => 'always()',
+              'description' => 'Allows access to view the blogs in settings.'
+          ])
+      ];
+      return $permissions;
     }
 }
