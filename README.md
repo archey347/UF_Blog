@@ -36,6 +36,16 @@ php bakery migrate
 
 To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the directory in the first line so that it extends the side menu template in one of the sprinkles rather than the main admin sprinkle.
 
+## Using The Blog
+
+The blog can be included into a webpage using an iframe, like below:
+
+```html
+<iframe src="https://{{site.uri.public}}/blogs/b/{{blog_slug}}/view"></iframe>
+```
+
+Make sure to replace `{{blog_slug}}` with the blog you want to display, or define it as a variable when you call the twig template engine on the main page.
+
 ## Blog Formatting
 
 To change the formatting of the blog, edit the twig template at `templates/pages/blog-view.html.twig`.
@@ -50,3 +60,7 @@ When the sprinkle is first installed, there are two permissions:
 Both permissions allow access to managing the blogs, however, `uri_blog_manager_view` gives only read access to the blog managment (This is useful if you want to allow somebody to add or remove posts to the blogs but not actually manage them).
 
 For each blog, a read and write permission is created which can be used to control who has access. There is also a 'public' option which doesn't require an authenticated session to view the blog.
+
+## Contributing
+
+Please read the [contributing guidelines](CONTRIBUTING.md).
