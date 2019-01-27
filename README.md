@@ -1,6 +1,8 @@
 # userfrosting-blog
 Blog sprinkle for Userfrosting.
 
+![Screenshot of Blog and Dasboard](https://raw.githubusercontent.com/archey347/userfrosting-blog/master/Capture.PNG)
+
 ## Installation
 
 1. Clone this repo into the sprinkles folder of your Userfrosting instance. *Make sure to rename the folder to `blog` rather than userfrosting-blog*.
