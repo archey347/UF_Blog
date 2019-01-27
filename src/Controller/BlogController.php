@@ -783,8 +783,10 @@ class BlogController extends SimpleController
 
 		$currentUser = $this->ci->currentUser;
 		
-		if (!$authorizer->checkAccess($currentUser, $perm_slug)) {
-			throw new ForbiddenException();
+		if($perm_slug != "") {
+			if (!$authorizer->checkAccess($currentUser, $perm_slug)) {
+				throw new ForbiddenException();
+			}
 		}
 	}
 }
