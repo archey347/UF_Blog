@@ -447,7 +447,8 @@ class BlogController extends SimpleController
 				'validators' => [
 					'postCreate' => $create_post_validator->rules(),
 					'postEdit' => $edit_post_validator->rules()
-				]
+				],
+				"blog" => $blog->toArray()
 			]
 		]);   
 			
