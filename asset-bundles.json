@@ -30,6 +30,19 @@
                 }
             }
         },
+        "js/admin/blog" : {
+            "scripts": [
+                "userfrosting/js/blog-admin.js",
+                "vendor/tinymce/tinymce.js"
+            ],
+            "options": {
+                "result": {
+                    "type": {
+                        "scripts": "plain"
+                    }
+                }
+            }
+        },
         "css/blogmain": {
             "styles": [
                 "vendor/font-awesome/css/font-awesome.css",

@@ -8,7 +8,16 @@
 	</div>
 	<div class="form-group has-feedback">
 		<label>Post Content</label>
-		<textarea class="form-control" rows="10" name="post_content" id="post_content">{{post.content|raw}}</textarea>
+		<textarea class="form-control js-editor" style="height: 300px" name="post_content" id="post_content">{{post.content|raw}}</textarea>
 	</div>
-	<button class="btn btn-primary">{{form.submit}}</button>
+	<div class="row">
+        <div class="col-xs-8 col-sm-4">
+            <button type="submit" class="btn btn-block btn-lg btn-success">
+                {{form.submit}}</button>
+        </div>
+        <div class="col-xs-4 col-sm-3 pull-right">
+            <button class="btn btn-block btn-lg btn-link" data-dismiss="modal" type="button">
+                {{translate('CANCEL')}}</button>
+        </div>
+    </div>
 </form>
