@@ -11,6 +11,11 @@
 					msgTarget: $("#alerts-page")
 				});
 				$('body').on('renderSuccess.ufModal', function (data) {	
+                    clearEditor()
+                    tinymce.init({
+                        selector: '.js-editor'
+                      });
+
 					$("#edit-post").ufForm({
 						validators: page.validators.postEdit,
 						msgTarget: $("#blog-alert")
@@ -62,12 +67,11 @@
 				
 				
 				
-				$('body').on('renderSuccess.ufModal', function (data) {
+                $('body').on('renderSuccess.ufModal', function (data) {
+                    clearEditor()
 					tinymce.init({
-						selector: ".js-editor",
-						plugins: "a11ychecker, advcode, formatpainter, linkchecker, media mediaembed, powerpaste, tinydrive, tinymcespellchecker",
-						toolbar: "a11ycheck, code, formatpainter, insertfile"
-						});
+                        selector: '.js-editor'
+                      });
 											
 					$("#create-post").ufForm({
 						validators: page.validators.postCreate,
@@ -77,4 +81,11 @@
 					});
 				});
 			});
-		});
+        });
+        function clearEditor() 
+        {
+            for (var i = tinymce.editors.length - 1 ; i > -1 ; i--) {
+                var ed_id = tinymce.editors[i].id;
+                tinyMCE.execCommand("mceRemoveEditor", true, ed_id);
+            }
+        }

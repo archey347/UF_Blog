@@ -32,7 +32,8 @@
         },
         "js/admin/blog" : {
             "scripts": [
-                "userfrosting/js/blog-admin.js"
+                "userfrosting/js/blog-admin.js",
+                "vendor/tinymce/tinymce.js"
             ],
             "options": {
                 "result": {
