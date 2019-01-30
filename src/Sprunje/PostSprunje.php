@@ -28,7 +28,7 @@ class PostSprunje extends Sprunje
 	
 	protected $blog_slug;
 	
-	public function __construct(ClassMapper $classMapper, array $options, string $blog_slug) {
+	public function __construct(ClassMapper $classMapper, array $options, $blog_slug) {
 		$this->blog_slug = $blog_slug;
 		parent::__construct($classMapper, $options);
 	}
