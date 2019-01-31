@@ -32,28 +32,12 @@
         },
         "js/admin/blog" : {
             "scripts": [
-                "userfrosting/js/blog-admin.js",
-                "vendor/tinymce/tinymce.js",
-                "vendor/tinymce/themes/modern/theme.js"
-
+                "userfrosting/js/blog-admin.js"
             ],
             "options": {
                 "result": {
                     "type": {
                         "scripts": "plain"
-                    }
-                }
-            }
-        },
-        "css/admin/blog": {
-            "styles": [
-                "vendor/tinymce/skins/lightgray/skin.min.css",
-                "vendor/tinymce/skins/lightgray/content.min.css"
-            ],
-            "options": {
-                "result": {
-                    "type": {
-                        "styles": "plain"
                     }
                 }
             }
