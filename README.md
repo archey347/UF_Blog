@@ -48,6 +48,10 @@ The blog can be included into a webpage using an iframe, like below:
 
 Make sure to replace `{{blog_slug}}` with the blog you want to display, or define it as a variable when you call the twig template engine on the main page.
 
+## WYSIWYG Editor
+
+The blog uses the tinyMCE WYSIWYG editor to allow for basic formatting in blog posts
+
 ## Blog Formatting
 
 To change the formatting of the blog, edit the twig template at `templates/pages/blog-view.html.twig`.
