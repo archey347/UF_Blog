@@ -1,35 +1,5 @@
 {
     "bundle": {
-        "js/blogmain": {
-            "scripts": [
-                "vendor/bootstrap/dist/js/bootstrap.js",
-                "vendor/handlebars/handlebars.js",
-                "vendor/jquery-validation/dist/jquery.validate.js",
-                "vendor/jquery-validation/dist/additional-methods.js",
-                "vendor/jquery-slimscroll/jquery.slimscroll.js",
-                "vendor/icheck/icheck.min.js",
-                "vendor/fastclick/lib/fastclick.js",
-                "vendor/select2/dist/js/select2.full.js",
-                "vendor/clipboard/dist/clipboard.js",
-                "userfrosting/js/attrchange.js",
-                "userfrosting/js/AdminLTE.js",
-                "userfrosting/js/AdminLTE-custom.js",
-                "userfrosting/js/fortress-jqueryvalidation-methods.js",
-                "userfrosting/js/uf-jqueryvalidation-config.js",
-                "userfrosting/js/uf-alerts.js",
-                "userfrosting/js/uf-form.js",
-                "userfrosting/js/uf-modal.js",
-                "userfrosting/js/uf-copy.js",
-                "userfrosting/js/uf-init.js"
-            ],
-            "options": {
-                "result": {
-                    "type": {
-                        "scripts": "plain"
-                    }
-                }
-            }
-        },
         "js/admin/blog" : {
             "scripts": [
                 "userfrosting/js/blog-admin.js"
