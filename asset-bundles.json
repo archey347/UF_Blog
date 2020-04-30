@@ -2,7 +2,8 @@
     "bundle": {
         "js/admin/blog" : {
             "scripts": [
-                "userfrosting/js/blog-admin.js"
+                "userfrosting/js/blog-admin.js",
+                "vendor/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"
             ],
             "options": {
                 "result": {

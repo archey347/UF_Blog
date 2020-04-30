@@ -11,10 +11,11 @@
 					msgTarget: $("#alerts-page")
 				});
 				$('body').on('renderSuccess.ufModal', function (data) {	
-                    clearEditor()
-                    tinymce.init({
-                        selector: '.js-editor'
-                      });
+                    ClassicEditor
+						.create( document.querySelector( '.js-editor' ) )
+						.catch( error => {
+							console.error( error );
+						} );
 
 					$("#edit-post").ufForm({
 						validators: page.validators.postEdit,
@@ -68,10 +69,11 @@
 				
 				
                 $('body').on('renderSuccess.ufModal', function (data) {
-                    clearEditor()
-					tinymce.init({
-                        selector: '.js-editor'
-                      });
+                    ClassicEditor
+						.create( document.querySelector( '.js-editor' ) )
+						.catch( error => {
+							console.error( error );
+						} );
 											
 					$("#create-post").ufForm({
 						validators: page.validators.postCreate,

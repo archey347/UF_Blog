@@ -55,7 +55,7 @@
 	<body style="background: none">
 		<h1>{{blog.title}}</h1>
 		
-		{%for post in posts%}
+		{% for post in posts %}
 
 			<div class="panel panel-primary">
 			  <div class="panel-heading">
@@ -89,7 +89,7 @@
 				<script src="//code.jquery.com/jquery-2.2.4.min.js" ></script>
 				<!-- Fallback if CDN is unavailable -->
 				<script>window.jQuery || document.write('<script src="{{ assets.url('assets://vendor/jquery/dist/jquery.min.js', true) }}"><\/script>')</script>
-	
+                
 				{{ assets.js() | raw }}
             {% endblock %}
 

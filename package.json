@@ -1,6 +1,6 @@
 {
     "private": true,
     "dependencies": {
-      "tinymce": "~4"
+      "@ckeditor/ckeditor5-build-classic": "^16.0.0"
     }
   }

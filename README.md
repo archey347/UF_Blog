@@ -46,7 +46,7 @@ Make sure to replace `{{blog_slug}}` with the blog you want to display, or defin
 
 ## WYSIWYG Editor
 
-The blog uses the tinyMCE WYSIWYG editor to allow for basic formatting in blog posts
+The blog uses the CKeditor 5 to allow for basic formatting in blog posts
 
 ## Blog Formatting
 
