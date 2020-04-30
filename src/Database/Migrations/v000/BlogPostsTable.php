@@ -30,17 +30,7 @@ class BlogPostsTable extends Migration
 
                 $table->engine = 'InnoDB';
                 $table->collation = 'utf8_unicode_ci';
-                $table->charset = 'utf8';
-                
-                $table->foreign('last_updates_by')->references('id')->on('users');
-                $table->index('last_updates_by');
-                
-                $table->foreign('author')->references('id')->on('users');
-                $table->index('author');
-                
-                $table->foreign('blog_id')->references('id')->on('blogs');
-                $table->index('blog_id');
-                
+                $table->charset = 'utf8'; 
             });
         }
     }
