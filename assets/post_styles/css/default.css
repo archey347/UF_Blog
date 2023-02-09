@@ -1,0 +1,156 @@
+.post .header {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    align-content: flex-start;
+    height: 50vw;
+    min-height: 400px;
+    max-height: 550px;
+    min-width: 300px;
+    color: #eee;
+}
+
+.post .header:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.12) 40%, rgba(27, 32, 48, 1) 100%);
+}
+
+.post .header:before {
+    content: "";
+    width: 100%;
+    height: 200%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+scale(1.0, 1.0);
+    transform: translateZ(0);
+    background: #1B2030 url(https://images.unsplash.com/photo-1571993142257-eae0b44cf0f1?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ) 50% 0 no-repeat;
+    background-size: 100%;
+    background-attachment: fixed;
+    animation: grow 360s linear 10ms infinite;
+    transition: all 0.4s ease-in-out;
+    z-index: -2
+}
+
+.post .header a {
+    color: #eee
+}
+
+.post .menu {
+    display: block;
+    width: 40px;
+    height: 30px;
+    border: 2px solid #fff;
+    border-radius: 3px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    text-decoration: none
+}
+
+.post .menu:after {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 3px;
+    background: #fff;
+    position: absolute;
+    margin: 0 auto;
+    top: 5px;
+    left: 0;
+    right: 0;
+    box-shadow: 0 8px, 0 16px
+}
+
+.post .logo {
+    border: 2px solid #fff;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    align-content: center;
+    margin: 20px;
+    padding: 0px 10px;
+    font-weight: 900;
+    font-size: 1.1em;
+    line-height: 1;
+    box-sizing: border-box;
+    height: 40px
+}
+
+.post .sides, .info {
+    flex: 0 0 auto;
+    width: 50%
+}
+
+.post .info {
+    width: 100%;
+    padding: 15% 10% 0 10%;
+    text-align: center;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.2)
+}
+
+.post .author {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: url(https://i.imgur.com/6DLCsZcb.jpg) center no-repeat;
+    background-size: cover;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+    margin-bottom: 3px
+}
+
+.post .info h4, .meta {
+    font-size: 0.7em
+}
+
+.post .meta {
+    font-style: italic;
+}
+
+@keyframes grow {
+    0% {
+        transform: scale(1) translateY(0px)
+    }
+    50% {
+        transform: scale(1.2) translateY(-400px)
+    }
+}
+
+.post .content {
+    padding: 5% 10%;
+    text-align: justify;
+    word-wrap: break-word;
+}
+
+.post .btn {
+    color: #333;
+    border: 2px solid;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-block;
+    padding: 5px 10px;
+    font-weight: 600
+}
+
+.post .twtr {
+    margin-top: 100px
+}
+
+.post .btn.twtr:after {
+    content: "\1F426";
+    padding-left: 5px
+}

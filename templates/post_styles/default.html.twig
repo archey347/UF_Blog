@@ -1,0 +1,53 @@
+{% extends "pages/base/post_base.html.twig" %}
+
+{% block navigation %}
+    {% include "navigation/styles/default.html.twig" %}
+{% endblock %}
+
+    {% block stylesheets_page %}
+        {{ parent() }}
+        <link rel="stylesheet" href="{{ assets.url("assets://post_styles/css/default.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/nav.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/footer.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/contact.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/contact.css", true) }}">
+
+    {% endblock %}
+{% block post %}
+    <section class="post">
+        <div class="header">
+            <div class="sides">
+                <a href="#" class="logo">{{ blog.title }}</a>
+            </div>
+            <div class="sides"></div>
+            <div class="info">
+                <h4><a href="#category">{{ blog.title }}</a></h4>
+                <h1>{{ post.title }}</h1>
+                <div class="meta">
+                    {# <a href="" target="_b" class="author"></a><br> #}
+                    By <a href="#" target="_b">
+                        by {{ post.author_user.first_name }} {{ post.author_user.last_name }}</a>
+                    on {{ post.created_at|date('M jS, Y g:i a') }}
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            {{ post.content|raw }}
+        </section>
+    </section>
+{% endblock %}
+
+{% block blog_posts %}
+{# TODO add other post links from the same blog #}
+
+{% endblock %}
+
+{% block footer %}
+    {{ parent() }}
+    <!-- Site footer -->
+    {% include "footer/styles/default.html.twig" %}
+{% endblock %}
+
+{% block contact %}
+    {% include "contact/styles/default.html.twig" %}
+{% endblock %}
