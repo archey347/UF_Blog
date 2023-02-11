@@ -11,7 +11,7 @@
     <meta property="og:type" content="article" />
     <meta property="og:url" content="{{ site.uri.public }}/blogs/b/{{ blog.slug }}/view/{{ post.id }}" />
     <meta property="og:image" content="{{ post.post_og_image }}" />
-    <meta property="og:description" content="{{ post.content|slice(0,50)|raw}}" />
+    <meta property="og:description" content="{{ post.content|slice(0,50)|striptags }}" />
 {% endblock %}
 
 {% block stylesheets_page %}
