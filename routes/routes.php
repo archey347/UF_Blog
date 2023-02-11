@@ -19,6 +19,8 @@ $app->get('/blogs/b/{blog_slug}/view', 'UserFrosting\Sprinkle\Blog\Controller\Bl
 
 $app->get('/blogs/b/{blog_slug}/view/{post_id}', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:genSingleBlogPost');
 
+$app->post('/images/upload', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:uploadImage');
+
 $app->group('/api', function () {
     $this->get('/blogs', 'UserFrosting\Sprinkle\Blog\Controller\BlogController:getBlogs');
 

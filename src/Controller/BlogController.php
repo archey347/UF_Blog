@@ -10,6 +10,7 @@
 
 namespace UserFrosting\Sprinkle\Blog\Controller;
 
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\NotFoundException;
@@ -568,6 +569,7 @@ class BlogController extends SimpleController
         $blog->posts()->create([
             'title'           => $params['post_title'],
             'content'         => $params['post_content'],
+            'post_og_image'   => $params['post_og_image'],
             'author'          => $this->ci->currentUser->id,
             'last_updates_by' => $this->ci->currentUser->id,
         ]);
@@ -621,8 +623,10 @@ class BlogController extends SimpleController
                     'id'     => 'edit-post',
                 ],
                 'post' => [
-                    'title'   => $post->title,
-                    'content' => $post->content,
+                    'title'         => $post->title,
+                    'content'       => $post->content,
+                    'id'            => $post->id,
+                    'post_og_image' => $post->post_og_image,
                 ],
             ]
         );
@@ -686,6 +690,7 @@ class BlogController extends SimpleController
 
         $post->title = $params['post_title'];
         $post->content = $params['post_content'];
+        $post->post_og_image = $params['post_og_image'];
 
         $post->last_updates_by = $this->ci->currentUser->id;
 
@@ -818,11 +823,52 @@ class BlogController extends SimpleController
         $post = BlogPost::where('id', $post_id)->first();
 
         $data = [
-            'blog'  => $blog->toArray(),
+            'blog' => $blog->toArray(),
             'post' => $post,
         ];
 
         return $this->ci->view->render($response, 'pages/post-view.html.twig', $data);
+    }
+
+    public function uploadImage(Request $request, Response $response, $args)
+    {
+        $params = $request->getParsedBody();
+        $post_id = $params['post_id'] ?? null;
+
+        $files = $request->getUploadedFiles();
+        $file = $files['post_image'];
+
+        $ms = $this->ci->alerts;
+
+        if (!$file) {
+            $ms->addMessageTranslated('warning', 'File not selected or incorrect file format', []);
+
+            return $response->withStatus(400);
+        }
+
+        $post = BlogPost::rightJoin('blogs', 'blogs.id', '=', 'blog_posts.blog_id')
+            ->find($post_id);
+
+        $fallback_filename = ('blog_' . date('Ymd_h_i_s', strtotime('now'))) . rand(0, 10000);
+
+        $filename = str_replace(' ', '_', $post->slug) . '_' . $post->id;
+
+        //    A fallback filename for new posts with no id
+        $filename = ($post->id ? $filename : $fallback_filename) . '.' . pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
+
+        $image_url = $this->ci->config['site.uri.public'] . "/public/files/$filename";
+
+        //  Save file to disk
+        $this->ci->filesystem->disk('public')->put($filename, $file->getStream());
+        try {
+            //Save file in storage folder
+            $this->ci->filesystem->disk('public')->delete(last(explode('/', $post->post_og_image)));
+        } catch (Exception $e) {
+        }
+
+        return $this->ci->view->render($response, 'raw/upload_message.json.twig', [
+            'image_url' => $image_url,
+        ]);
     }
 
     public function checkAccess($perm_slug)

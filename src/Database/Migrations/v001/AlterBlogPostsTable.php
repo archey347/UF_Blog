@@ -10,18 +10,16 @@ class AlterBlogPostsTable extends Migration
     public function up()
     {
         $this->schema->table('blog_posts', function (Blueprint $table) {
-            $table->string('blog_post_style_slug');
-            $table->string('blog_og_image', 500);
-            $table->string('blog_twitter_card_image', 500);
+            $table->string('post_style_slug');
+            $table->string('post_og_image', 500);
         });
     }
 
     public function down()
     {
         $this->schema->table('blog_posts', function (Blueprint $table) {
-            $table->dropColumn('blog_twitter_card_image');
-            $table->dropColumn('blog_og_image');
-            $table->dropColumn('blog_post_style_slug');
+            $table->dropColumn('post_og_image');
+            $table->dropColumn('post_style_slug');
         });
     }
 }

@@ -25,7 +25,7 @@
             <div class="card-grid-space">
                 <div class="num">{{ post.id }}</div>
                 <a class="card" href="{{ site.uri.public }}/blogs/b/{{ blog.slug }}/view/{{ post.id }}"
-                   style="--bg-img: url(https://images1-focus-opensocial.googleusercontent.com/gadgets/proxy?container=focus&resize_w=1500&url=https://codetheweb.blog/assets/img/posts/html-syntax/cover.jpg)">
+                   style="--bg-img: url({{ post.post_og_image }})">
                     <div class="contents">
                         <h1>{{ post.title }}</h1>
                         <div class="post_content">{{ post.content|slice(0,50)|raw }} ...</div>

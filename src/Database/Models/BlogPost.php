@@ -19,6 +19,7 @@ class BlogPost extends Model
         'title',
         'content',
         'author',
+        'post_og_image',
         'last_updates_by'
     ];
     
