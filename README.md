@@ -32,6 +32,11 @@ php bakery migrate
 ```
 5. If you have multiple sprinkles, you may need to change the side menu twig template.
 
+6. If you get any problem with the CKeditor, you might be needed to re-install the assets again by running this command, 
+```bash
+php bakery build-assets -f
+```   
+
 To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the directory in the first line so that it extends the side menu template in one of the sprinkles rather than the main admin sprinkle.
 
 ## Using The Blog

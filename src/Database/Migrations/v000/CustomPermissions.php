@@ -2,13 +2,13 @@
 
 namespace UserFrosting\Sprinkle\Blog\Database\Migrations\v000;
 
-use UserFrosting\System\Bakery\Migration;
+use UserFrosting\Sprinkle\Core\Database\Migration;
 use UserFrosting\Sprinkle\Account\Database\Models\Permission;
 use UserFrosting\Sprinkle\Account\Database\Models\Role;
 
 class CustomPermissions extends Migration
 {
-    public $dependencies = [
+    public static $dependencies = [
         '\UserFrosting\Sprinkle\Account\Database\Migrations\v400\PermissionsTable',
         '\UserFrosting\Sprinkle\Account\Database\Migrations\v400\RolesTable'
     ];
