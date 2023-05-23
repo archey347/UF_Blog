@@ -1,0 +1,73 @@
+:root {
+    --space: 1rem;
+    --border: 4px;
+    --page-width: 80ch;
+    --font-family: 'Airbnb Cereal', sans-serif;
+    --color-link: black;
+    --color-active: #00848A;
+    --ease: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration: 350ms;
+    --section-offset: 0;
+}
+
+ul:not(.menu) {
+    list-style-type: disc;
+    margin-left: var(--space);
+}
+ul:not(.menu) > li + li {
+    margin-top: var(--space);
+}
+
+.nav-sections {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.12);
+    z-index: 100;
+}
+.nav-sections .menu {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: scroll;
+    list-style: none;
+    -ms-scroll-chaining: none;
+    overscroll-behavior: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin: 0 auto;
+    max-width: var(--page-width);
+    transform: translateZ(0);
+    transition: transform var(--ease) var(--duration);
+}
+.nav-sections .menu::-webkit-scrollbar {
+    display: none;
+}
+.nav-sections .menu-item-link {
+    display: block;
+    padding: 12px 16px;
+    font-size: 15px;
+    text-decoration: none;
+    white-space: nowrap;
+    color: var(--color-link);
+    transition: color var(--ease) var(--duration);
+}
+.nav-sections .menu-item-link.active {
+    color: var(--color-active);
+}
+
+.menu-item:first-of-type .menu-item-link {
+    margin-left: 0;
+}
+
+.active-line {
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    height: 80%;
+    border-radius: 4px;
+    background-color: var(--color-active);
+    opacity: 10%;
+    transition: width var(--ease) var(--duration), transform var(--ease) var(--duration);
+}

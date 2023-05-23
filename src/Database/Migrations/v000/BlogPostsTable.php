@@ -4,11 +4,11 @@ namespace UserFrosting\Sprinkle\Blog\Database\Migrations\v000;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
-use UserFrosting\System\Bakery\Migration;
+use UserFrosting\Sprinkle\Core\Database\Migration;
 
 class BlogPostsTable extends Migration
 {
-    public $dependencies = [
+    public static $dependencies = [
         '\UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogsTable'
     ];
     

@@ -1,0 +1,60 @@
+{% extends "pages/base/blog_base.html.twig" %}
+
+{% block navigation %}
+    {% include "navigation/styles/default.html.twig" %}
+{% endblock %}
+
+    {% block stylesheets_page %}
+        {{ parent() }}
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/default.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/nav.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/footer.css", true) }}">
+        <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/contact.css", true) }}">
+
+    {% endblock %}
+
+{% block blog_posts %}
+
+    <section class="info">
+        {# <img src="https://codetheweb.blog/assets/img/icon2.png"> #}
+        {# <h1>Learn HTML &mdash; <a href="https://codetheweb.blog/" target="_blank">Code The Web</a></h1> #}
+        {# Blog description goes here #}
+    </section>
+    <section class="cards-wrapper">
+        {% for post in posts %}
+            <div class="card-grid-space">
+                <div class="num">{{ post.id }}</div>
+                <a class="card" href="{{ site.uri.public }}/blogs/b/{{ blog.slug }}/view/{{ post.id }}"
+                   style="--bg-img: url({{ post.post_og_image }})">
+                    <div class="contents">
+                        <h1>{{ post.title }}</h1>
+                        <div class="post_content">{{ post.content|slice(0,50)|raw }} ...</div>
+                        <div class="date">
+                            {% if post.updated_at > post.created_at %}#}
+                                <i>Last Updated at {{ post.updated_at|date('M jS, Y g:i a') }}
+                                    by {{ post.last_updates_by_user.first_name }} {{ post.last_updates_by_user.last_name }}</i>
+                            {% else %}
+                                <i>Created at {{ post.created_at|date('M jS, Y g:i a') }}
+                                    by {{ post.author_user.first_name }} {{ post.author_user.last_name }}</i>
+                            {% endif %}
+                        </div>
+                        <div class="tags">
+                            <div class="tag">Blog</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </section>
+
+{% endblock %}
+
+{% block footer %}
+    {{ parent() }}
+    <!-- Site footer -->
+    {% include "footer/styles/default.html.twig" %}
+{% endblock %}
+
+{% block contact %}
+    {% include "contact/styles/default.html.twig" %}
+{% endblock %}

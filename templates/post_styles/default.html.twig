@@ -1,0 +1,84 @@
+{% extends "pages/base/post_base.html.twig" %}
+
+{% block navigation %}
+    {% include "navigation/styles/default.html.twig" %}
+{% endblock %}
+
+{% block head_extra %}
+    {{ parent() }}
+
+    <meta property="og:title" content="{{ post.title }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ site.uri.public }}/blogs/b/{{ blog.slug }}/view/{{ post.id }}" />
+    <meta property="og:image" content="{{ post.post_og_image }}" />
+    <meta property="og:description" content="{{ post.content|slice(0,50)|striptags }}" />
+{% endblock %}
+
+{% block stylesheets_page %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ assets.url("assets://post_styles/css/default.css", true) }}">
+    <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/nav.css", true) }}">
+    <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/footer.css", true) }}">
+    <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/contact.css", true) }}">
+    <link rel="stylesheet" href="{{ assets.url("assets://blog_styles/css/contact.css", true) }}">
+
+{% endblock %}
+{% block post %}
+    <section class="post">
+        <div class="header">
+            <div class="sides">
+                <a href="#" class="logo">{{ blog.title }}</a>
+            </div>
+            <div class="sides"></div>
+            <div class="info">
+                <h4><a href="#category">{{ blog.title }}</a></h4>
+                <h1>{{ post.title }}</h1>
+                <div class="meta">
+                    {# <a href="" target="_b" class="author"></a><br> #}
+                    By <a href="#" target="_b">
+                        by {{ post.author_user.first_name }} {{ post.author_user.last_name }}</a>
+                    on {{ post.created_at|date('M jS, Y g:i a') }}
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            {{ post.content|raw }}
+        </section>
+        <style>
+            .post .header:before {
+                content: "";
+                width: 100%;
+                height: 200%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                -webkit-backface-visibility: hidden;
+                -webkit-transform: translateZ(0);
+                backface-visibility: hidden;
+            scale(1.0, 1.0);
+                transform: translateZ(0);
+                background: #1B2030 url({{ post.post_og_image }}) 50% 0 no-repeat;
+                background-size: 100%;
+                background-attachment: fixed;
+                animation: grow 360s linear 10ms infinite;
+                transition: all 0.4s ease-in-out;
+                z-index: -2
+            }
+        </style>
+    </section>
+{% endblock %}
+
+{% block blog_posts %}
+    {# TODO add other post links from the same blog #}
+
+{% endblock %}
+
+{% block footer %}
+    {{ parent() }}
+    <!-- Site footer -->
+    {% include "footer/styles/default.html.twig" %}
+{% endblock %}
+
+{% block contact %}
+    {% include "contact/styles/default.html.twig" %}
+{% endblock %}
