@@ -2,6 +2,10 @@
 
 namespace UserFrosting\Sprinkle\Blog\Blog;
 
+use UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogPostsTable;
+use UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogsTable;
+use UserFrosting\Sprinkle\Blog\Database\Models\BlogPost;
+use UserFrosting\Sprinkle\Blog\Database\Seeds\BlogPermissionsSeed;
 use UserFrosting\Sprinkle\Core\Sprinkle\Recipe\MigrationRecipe;
 use UserFrosting\Sprinkle\Core\Sprinkle\Recipe\SeedRecipe;
 use UserFrosting\Sprinkle\Core\Sprinkle\Recipe\TwigExtensionRecipe;
@@ -45,12 +49,15 @@ class Locations implements SprinkleRecipe, TwigExtensionRecipe, MigrationRecipe,
     public function getMigrations(): array
     {
         return [
+            BlogsTable::class,
+            BlogPostsTable::class,
         ];
     }
 
     public function getSeeds(): array
     {
         return [
+            BlogPermissionsSeed::class,
         ];
     }
 }

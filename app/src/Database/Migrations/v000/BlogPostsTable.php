@@ -9,10 +9,10 @@ use UserFrosting\Sprinkle\Core\Database\Migration;
 class BlogPostsTable extends Migration
 {
     public static $dependencies = [
-        '\UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogsTable'
+        BlogsTable::class
     ];
     
-    public function up()
+    public function up(): void
     {
         if (!$this->schema->hasTable('blog_posts')) {
             $this->schema->create('blog_posts', function (Blueprint $table) {
@@ -28,6 +28,8 @@ class BlogPostsTable extends Migration
                 
                 $table->timestamps();
 
+                $table->foreign('blog_id')->references('id')->on('blogs');
+
                 $table->engine = 'InnoDB';
                 $table->collation = 'utf8_unicode_ci';
                 $table->charset = 'utf8'; 
@@ -35,7 +37,7 @@ class BlogPostsTable extends Migration
         }
     }
 
-    public function down()
+    public function down(): void
     {
         $this->schema->drop('blog_posts');
     }

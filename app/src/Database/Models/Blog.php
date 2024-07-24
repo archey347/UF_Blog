@@ -7,11 +7,6 @@ use UserFrosting\Sprinkle\Core\Database\Models\Model;
 
 class Blog extends Model
 {
-    public $dependencies = [
-        '\UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogPost',
-    ];
-    
-    
     protected $table = 'blogs';
     public $primaryKey = "id";
 

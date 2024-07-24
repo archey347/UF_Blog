@@ -3,16 +3,16 @@
 namespace UserFrosting\Sprinkle\Blog\Database\Migrations\v000;
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Databasvar;
+use UserFrosting\Sprinkle\Account\Database\Migrations\v400\PermissionsTable;
 use UserFrosting\Sprinkle\Core\Database\Migration;
 
 class BlogsTable extends Migration
 {
     public static $dependencies = [
-        '\UserFrosting\Sprinkle\Account\Database\Migrations\v400\PermissionsTable'
+        PermissionsTable::class
     ];
 
-    public function up()
+    public function up(): void
     {
         if (!$this->schema->hasTable('blogs')) {
             $this->schema->create('blogs', function (Blueprint $table) {
@@ -36,7 +36,7 @@ class BlogsTable extends Migration
         }
     }
 
-    public function down()
+    public function down(): void
     {
         $this->schema->drop('blogs');
     }
