@@ -1,54 +1,22 @@
 # userfrosting-blog
-Blog sprinkle for Userfrosting.
-
+Blog sprinkle for Userfrosting v5.1.
 ![Screenshot of Blog and Dasboard](https://raw.githubusercontent.com/archey347/userfrosting-blog/master/Capture.PNG)
 
-## Installation
+## Installation (UNTESTED)
 
-1. Add the sprinkle `blog` to your sprinkles.json file. It should look something like below (you may have other sprinkles already loaded).
-```json
-{
-	"require": {
-		"archey347/uf_blog" : "^v0.2.1"
-	},
-	"base": [
-		"core",
-		"account",
-		"admin",
-		"blog"
-	]
-}
+1. Add the package to your `composer.json`. This can be done with:
 ```
+composer require archey347/uf_blog "version!"
+```
+2. Install via NPM
 
-2. Run Composer Update **(Not As Root)**
+3. Add to main webpack entries file
 
-```
-composer update
-```
 
 4. Run the bakery migration to create the required database tables. Go to the root folder of your Userfrosting instance in a command line and run:
 ```bash
 php bakery migrate
 ```
-5. If you have multiple sprinkles, you may need to change the side menu twig template.
-
-6. If you get any problem with the CKeditor, you might be needed to re-install the assets again by running this command, 
-```bash
-php bakery build-assets -f
-```   
-
-To do this, open `templates/navigation/sidebar-menu.html.twig` and edit the directory in the first line so that it extends the side menu template in one of the sprinkles rather than the main admin sprinkle.
-
-## Using The Blog
-
-The blog can be included into a webpage using an iframe, like below:
-
-```html
-<iframe src="https://{{site.uri.public}}/blogs/b/{{blog_slug}}/view"></iframe>
-```
-
-Make sure to replace `{{blog_slug}}` with the blog you want to display, or define it as a variable when you call the twig template engine on the main page.
-
 ## WYSIWYG Editor
 
 The blog uses the CKeditor 5 to allow for basic formatting in blog posts

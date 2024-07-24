@@ -1,6 +1,21 @@
 {
-    "private": true,
+    "name": "@archey347/uf_blog",
+    "version": "v0.0.0",
     "dependencies": {
-      "@ckeditor/ckeditor5-build-classic": "^16.0.0"
+        "@userfrosting/sprinkle-admin": "~5.1.0",
+        "@userfrosting/theme-adminlte": "~5.1.0",
+        "@ckeditor/ckeditor5-build-classic": "^16.0.0"
+    },
+    "devDependencies": {
+        "@symfony/webpack-encore": "^4.4.0",
+        "file-loader": "^6.2.0",
+        "sass": "^1.51.0",
+        "webpack-notifier": "^1.14.1"
+    },
+    "scripts": {
+        "dev-server": "encore dev-server",
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production --progress"
     }
-  }
+}

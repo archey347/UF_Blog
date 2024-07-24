@@ -8,12 +8,26 @@
             "name": "Archey Barrell"
         }
     ],
-    "extra": {
-        "installer-name": "blog"
+    "require": {
+        "php": "^8.0",
+        "userfrosting/framework": "~5.1.0",
+        "userfrosting/sprinkle-core": "~5.1.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "phpstan/phpstan": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-mockery": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
+        "phpunit/phpunit": "^10.5",
+        "mockery/mockery": "^1.2",
+        "league/factory-muffin": "^3.0",
+        "league/factory-muffin-faker": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "UserFrosting\\Sprinkle\\Blog\\": "src/"
+            "UserFrosting\\Sprinkle\\Blog\\": "app/src/"
         }
     }
 }
