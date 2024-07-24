@@ -1,6 +1,6 @@
 <?php
 
-namespace UserFrosting\Sprinkle\Blog\Blog;
+namespace UserFrosting\Sprinkle\Blog;
 
 use UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogPostsTable;
 use UserFrosting\Sprinkle\Blog\Database\Migrations\v000\BlogsTable;
@@ -11,7 +11,7 @@ use UserFrosting\Sprinkle\Core\Sprinkle\Recipe\SeedRecipe;
 use UserFrosting\Sprinkle\Core\Sprinkle\Recipe\TwigExtensionRecipe;
 use UserFrosting\Sprinkle\SprinkleRecipe;
 
-class Locations implements SprinkleRecipe, TwigExtensionRecipe, MigrationRecipe, SeedRecipe
+class Blog implements SprinkleRecipe, TwigExtensionRecipe, MigrationRecipe, SeedRecipe
 {
     public function getName(): string
     {

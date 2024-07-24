@@ -4,6 +4,7 @@ namespace UserFrosting\Sprinkle\Blog\Routes;
 
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
+use Spanner\Clubs\Middlewares\BlogInjector;
 use UserFrosting\Routes\RouteDefinitionInterface;
 use UserFrosting\Sprinkle\Account\Authenticate\AuthGuard;
 use UserFrosting\Sprinkle\Blog\Controller\BlogController;
@@ -11,9 +12,16 @@ use UserFrosting\Sprinkle\Blog\Controller\BlogController;
 class ClubRoutes implements RouteDefinitionInterface 
 {
     public function register(App $app):void {
-        $app->group('/blogs', function(RouteCollectorProxy $group) {
-            $group->get('', [BlogController::class, 'displayBlogAdmin']);
-        })->add(AuthGuard::class);
+
+        $app->group('/blogs/b/{id}', function(RouteCollectorProxy $group) {
+            $group->get('', [BlogController::class, 'pageBlog']);
+        })->add(BlogInjector::class);
+        
+        
+        
+        
+        
+        
         
         $app->get('/blogs/b/{blog_slug}', [BlogController::class, 'getSingleBlogAdmin'])
             ->add(AuthGuard::class);
