@@ -38,7 +38,7 @@
 				$("body").ufModal({
 					sourceUrl: site.uri.public + "/modals/blog/edit",
 					ajaxParams: {
-						slug: $(this).data('slug')
+						id: $(this).data('id')
 					},
 					msgTarget: $("#alerts-page")
 				});
@@ -96,7 +96,7 @@
 					$("body").ufModal({
 						sourceUrl: site.uri.public + "/modals/blog/confirm-delete",
 						ajaxParams: {
-							slug: $(this).data('slug')
+							id: $(this).data('id')
 						},
 						msgTarget: $("#alerts-page")
 					});

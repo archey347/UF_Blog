@@ -21,7 +21,7 @@
     <script id="blog-table-column-info" type="text/x-handlebars-template">
         <td data-text="{{row.slug}}">
             <strong>
-                <a href="{{site.uri.public}}/blogs/b/{{row.slug}}">{{row.title}} ({{row.slug}})</a>
+                <a href="{{site.uri.public}}/blogs/b/{{row.id}}">{{row.title}}</a>
             </strong>
         </td>
     </script>
@@ -51,7 +51,7 @@
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right" role="menu">
 					<li>
-						<a href="{{site.uri.public}}/blogs/b/{{row.slug}}/view" target="_blank">
+						<a href="{{site.uri.public}}/blogs/b/{{row.id}}" target="_blank">
 						   <i class="fa fa-eye"></i> Preview Blog
 						</a>
 					</li>
@@ -59,12 +59,12 @@
 					{% if checkAccess('uri_blog_manager') %}
 					{% verbatim %}
 					<li>
-						<a href="#" data-slug="{{row.slug}}" class="js-blog-edit">
+						<a href="#" data-id="{{row.id}}" class="js-blog-edit">
 						   <i class="fa fa-edit"></i> Edit blog
 						</a>
 					</li>
 					<li>
-						<a href="#" data-slug="{{row.slug}}" class="js-blog-delete">
+						<a href="#" data-id="{{row.id}}" class="js-blog-delete">
 							<i class="fa fa-trash-o"></i> Delete blog
 						</a>
 					</li>

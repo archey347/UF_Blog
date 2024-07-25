@@ -18,7 +18,6 @@ class BlogsTable extends Migration
             $this->schema->create('blogs', function (Blueprint $table) {
 
                 $table->increments('id');
-                $table->string('slug', 255)->unique();
                 $table->string('title', 255)->nullable();
 
                 $table->boolean('public');

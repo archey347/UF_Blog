@@ -1,21 +1,20 @@
 <?php
 namespace UserFrosting\Sprinkle\Blog\Sprunje;
 
-use UserFrosting\Sprinkle\Core\Facades\Debug;
 use UserFrosting\Sprinkle\Core\Sprunje\Sprunje;
 
 use UserFrosting\Sprinkle\Blog\Database\Models\Blog;
 
 class BlogSprunje extends Sprunje
 {
-    protected $name = 'blogs';
+    protected string $name = 'blogs';
 
-	protected $sortable = [
+	protected array $sortable = [
         'slug',
         'title'
     ];
 
-    protected $filterable = [
+    protected array $filterable = [
         'slug',
         'title',
 		'read_permission',

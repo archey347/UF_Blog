@@ -1,0 +1,5 @@
+{% if (checkAccess('uri_blog_manager') or checkAccess('uri_blog_manager_view')) %}
+<li>
+    <a href="{{site.uri.public}}/admin/blogs"><i class="fa fa-rss-square fa-fw"></i> <span>Blogs</span></a>
+</li>
+{%endif%}

@@ -9,17 +9,6 @@ blog_name:
       max: 50
       message: "The blog name must be between {{min}} and {{max}} characters."
 
-blog_slug:
-  validators:
-    required:
-      label: Blog Slug
-      message: Please enter the blog slug.
-    length:
-      label: Blog Slug
-      min: 1
-      max: 50
-      message: "The blog slug must be between {{min}} and {{max}} characters."
-
 read_permission:
   validators:
     required:

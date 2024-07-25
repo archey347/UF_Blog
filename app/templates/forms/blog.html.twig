@@ -6,10 +6,6 @@
 		<label>Blog Title</label>
 		<input type="text" class="form-control" name="blog_name" id="blog_name" value="{{blog.name}}">
 	</div>
-	<div class="form-group has-feedback">
-		<label>Blog Slug</label>
-		<input type="text" class="form-control" name="blog_slug" id="blog_slug" value="{{blog.slug}}">
-	</div>
 	<div class="checkbox icheck">
         <label>
             <input type="checkbox" class="js-icheck" name="public" id="public" {%if blog.public %}checked{%endif%}> Public Blog
