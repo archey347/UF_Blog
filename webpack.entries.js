@@ -1,5 +1,5 @@
 const path = require('path');
 
 module.exports = {
-//    'page.locations': path.resolve(__dirname,  "./app/assets/locations.js"),
+    'page.admin.blogs': path.resolve(__dirname,  "./app/assets/page.admin.blogs.js"),
 };
