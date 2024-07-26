@@ -185,7 +185,7 @@ class AdminBlogsController
 		$params = $request->getParsedBody();
 		
 		// Load the request schema
-		$schema = new RequestSchema('schema://requests/edit-blog.yaml');
+		$schema = new RequestSchema('schema://requests/blog.yaml');
 		
 		// Whitelist and set parameter defaults
 		$data = $this->transformer->transform($schema, $params);
