@@ -20,11 +20,6 @@ class BlogsTable extends Migration
                 $table->increments('id');
                 $table->string('title', 255)->nullable();
 
-                $table->boolean('public');
-
-                $table->string('read_permission', 255);
-                $table->string('write_permission', 255);
-
                 $table->engine = 'InnoDB';
                 $table->collation = 'utf8_unicode_ci';
                 $table->charset = 'utf8';

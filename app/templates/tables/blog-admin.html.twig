@@ -4,9 +4,7 @@
     <table id="{{table.id}}" class="tablesorter table table-bordered table-hover table-striped" data-sortlist="{{table.sortlist}}">
         <thead>
             <tr>
-                <th class="sorter-metatext" data-column-name="slug" data-column-template="#blog-table-column-info" data-priority="">Blogs <i class="fa fa-sort"></i></th>
-				<th class="sorter-metatext" data-column-name="read_permission" data-column-template="#blog-table-column-read-perm" data-priority="1">Read Permission <i class="fa fa-sort"></i></th>
-				<th class="sorter-metatext" data-column-name="write_permission" data-column-template="#blog-table-column-write-perm" data-priority="1">Write Permission <i class="fa fa-sort"></i></th>
+                <th class="sorter-metatext" data-column-name="title" data-column-template="#blog-table-column-info" data-priority="">Blogs <i class="fa fa-sort"></i></th>
 				<th class="sorter-metatext" data-column-template="#blog-table-column-actions" data-sorter="false" data-filter="false" data-priority="1">Actions<i class="fa fa-sort"></i></th>
 			</tr>
         </thead>
@@ -19,25 +17,9 @@
 
     {% verbatim %}
     <script id="blog-table-column-info" type="text/x-handlebars-template">
-        <td data-text="{{row.slug}}">
+        <td data-text="{{row.id}}">
             <strong>
                 <a href="{{site.uri.public}}/blogs/b/{{row.id}}">{{row.title}}</a>
-            </strong>
-        </td>
-    </script>
-	
-	<script id="blog-table-column-read-perm" type="text/x-handlebars-template">
-        <td data-text="{{row.slug}}">
-            <strong>
-                {{#if row.public}}Public{{else}}{{row.read_permission}}{{/if}}
-            </strong>
-        </td>
-    </script>
-
-	<script id="blog-table-column-write-perm" type="text/x-handlebars-template">
-        <td data-text="{{row.slug}}">
-            <strong>
-                {{row.write_permission}}
             </strong>
         </td>
     </script>

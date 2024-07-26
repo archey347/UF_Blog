@@ -50,19 +50,14 @@ class AdminBlogsController
 			throw new NotFoundException();
 		}
 
-		$create_rules = $this->formValidationArrayAdapter->rules(
-			new RequestSchema('schema://requests/create-blog.yaml')
+		$rules = $this->formValidationArrayAdapter->rules(
+			new RequestSchema('schema://requests/blog.yaml')
 		);
 
-		$edit_rules = $this->formValidationArrayAdapter->rules(
-			new RequestSchema('schema://requests/edit-blog.yaml')
-		);
-		
 		return $this->view->render($response, 'pages/blogs.html.twig', [
 			'page' => [
 				'validators' => [
-					'create_blog' => $create_rules,
-					'edit_blog'   => $edit_rules,
+					'blog' => $rules,
 				]
 			]
 		]);        
@@ -120,14 +115,7 @@ class AdminBlogsController
 					"method" => "PUT",
 					"id" => "edit-blog"
                 ],
-				"blog" =>
-				[
-					"id" => $blog->id,
-					"name" => $blog->title,
-					"read_p" => $blog->read_permission,
-					"write_p" => $blog->write_permission,
-					"public" => $blog->public,
-				]
+				"blog" => $blog->toArray(),
             ]
         );    
     }
@@ -143,13 +131,7 @@ class AdminBlogsController
                 [
 					"action" => "api/blogs/b/" . $blog->id,
                 ],
-				"blog" =>
-				[
-					"id" => $blog->id,
-					"name" => $blog->title,
-					"read_p" => $blog->read_permission,
-					"write_p" => $blog->write_permission,
-				]
+				"blog" => $blog->toArray()
             ]
         );    
     }
@@ -164,7 +146,7 @@ class AdminBlogsController
 		$params = $request->getParsedBody();
 		
 		// Load the request schema
-		$schema = new RequestSchema('schema://requests/create-blog.yaml');
+		$schema = new RequestSchema('schema://requests/blog.yaml');
 		
 		// Whitelist and set parameter defaults
 		$data = $this->transformer->transform($schema, $params);
@@ -183,12 +165,9 @@ class AdminBlogsController
 		$blog = new Blog;
 		
 		$blog->title = $data['blog_name'];
-		$blog->read_permission = $data['public'] == 1 ? "" : $data['read_permission'];
-		$blog->write_permission = $data['write_permission'];
-		$blog->public = $data['public'] == 1;
 		$blog->save();
 		
-		$this->alerts->addMessage('success', "Successfully added blog '".$data['blog_slug']."'.");
+		$this->alerts->addMessage('success', "Successfully added blog '".$data['blog_name']."'.");
 		
 		$payload = json_encode([], JSON_THROW_ON_ERROR);
         $response->getBody()->write($payload);
@@ -221,16 +200,10 @@ class AdminBlogsController
 			throw $e;
 		}
 		
-		$blog->title = $data['blog_name'];
-
-		$blog->read_permission = $data['public'] == 1 ? "" : $data['read_permission'];
-		$blog->write_permission = $data['write_permission'];
-		
-		$blog->public = $data['public'];
-		
+		$blog->title = $data['blog_name'];		
 		$blog->save();
 		
-		$this->alerts->addMessage('success', "Successfully updated blog '".$data['blog_slug']."'.");
+		$this->alerts->addMessage('success', "Successfully updated blog '".$data['blog_name']."'.");
 
 		$payload = json_encode([], JSON_THROW_ON_ERROR);
         $response->getBody()->write($payload);

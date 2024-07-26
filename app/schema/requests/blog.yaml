@@ -1,0 +1,10 @@
+blog_name:
+  validators:
+    required:
+      label: Blog Name
+      message: Please enter the name of the blog.
+    length:
+      label: Name
+      min: 1
+      max: 50
+      message: "The blog name must be between {{min}} and {{max}} characters."

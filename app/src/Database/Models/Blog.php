@@ -11,11 +11,7 @@ class Blog extends Model
     public $primaryKey = "id";
 
     protected $fillable = [
-        'slug',
         'title',
-        'read_permission',
-        'write_permission',
-        'public'
     ];
 
     public function posts()

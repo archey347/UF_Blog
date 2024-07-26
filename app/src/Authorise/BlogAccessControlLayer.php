@@ -19,23 +19,11 @@ class BlogAccessControlLayer implements BlogAccessControlLayerInterface
 
     public function checkViewAccess(User $user, Blog $blog): bool
     {
-        if($blog->public) {
-            return true;
-        }
-        
-        if($this->acl->checkAccess($user, $blog->read_permission)) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
     
     public function checkAdminAccess(User $user, Blog $blog): bool
     {
-        if($this->acl->checkAccess($user, $blog->write_permission)) {
-            return true;
-        }
-
-        return false;
+        return $this->acl->checkAccess($user, "uri_blog_manager");
     }
 }

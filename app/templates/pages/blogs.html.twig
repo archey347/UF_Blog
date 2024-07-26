@@ -43,44 +43,6 @@
 					msgTarget: $("#alerts-page")
 				});
 				$('body').on('renderSuccess.ufModal', function (data) {
-					$('input').iCheck({
-						checkboxClass: 'icheckbox_square',
-						radioClass: 'iradio_minimal',
-						increaseArea: '20%' // optional
-					  });
-					hasWritten = false;
-					$('#blog_name').keyup(function () {
-						if(!hasWritten) {
-							$('#blog_slug').val($('#blog_name').val().toLowerCase().replace(" ", "_"));
-							$('#read_permission').val("blog_r_" +	$('#blog_slug').val());
-							$('#write_permission').val("blog_w_" +	$('#blog_slug').val());
-						}
-					});
-					$('#blog_slug').keyup(function () {
-						hasWritten = true;
-						$('#read_permission').val("blog_r_" +	$('#blog_slug').val());
-						$('#write_permission').val("blog_w_" +	$('#blog_slug').val());
-					});
-					
-					
-					if($('#read_permission').val() == "") {
-						$('#read_permission').val("blog_r_" +	$('#blog_name').val());
-					}
-					if($('#write_permission').val() == "") {
-						$('#write_permission').val("blog_w_" +	$('#blog_name').val());
-					}
-					
-					if($('#public').iCheck('update')[0].checked) {
-						document.getElementById('read_permission_container').style.display = 'none';	
-					}
-					
-					$('#public').on('ifChecked', function () {
-						document.getElementById('read_permission_container').style.display = 'none';
-					});
-					
-					$('#public').on('ifUnchecked', function () {
-						document.getElementById('read_permission_container').style.display = 'block';
-					});
 					
 					$("#edit-blog").ufForm({
 						validators: page.validators.editBlog,
@@ -133,45 +95,6 @@
 				
 				
 				$('body').on('renderSuccess.ufModal', function (data) {
-					$('input').iCheck({
-						checkboxClass: 'icheckbox_square',
-						radioClass: 'iradio_minimal',
-						increaseArea: '20%' // optional
-					  });
-					hasWritten = false;
-					$('#blog_name').keyup(function () {
-						if(!hasWritten) {
-							$('#blog_slug').val($('#blog_name').val().toLowerCase().replace(" ", "_"));
-							$('#read_permission').val("blog_r_" +	$('#blog_slug').val());
-							$('#write_permission').val("blog_w_" +	$('#blog_slug').val());
-						}
-					});
-					$('#blog_slug').keyup(function () {
-						hasWritten = true;
-						$('#read_permission').val("blog_r_" +	$('#blog_slug').val());
-						$('#write_permission').val("blog_w_" +	$('#blog_slug').val());
-					});
-					
-					
-					if($('#read_permission').val() == "") {
-						$('#read_permission').val("blog_r_" +	$('#blog_name').val());
-					}
-					if($('#write_permission').val() == "") {
-						$('#write_permission').val("blog_w_" +	$('#blog_name').val());
-					}
-					
-					if($('#public').iCheck('update')[0].checked) {
-						document.getElementById('read_permission_container').style.display = 'none';	
-					}
-					
-					$('#public').on('ifChecked', function () {
-						document.getElementById('read_permission_container').style.display = 'none';
-					});
-					
-					$('#public').on('ifUnchecked', function () {
-						document.getElementById('read_permission_container').style.display = 'block';
-					});
-					
 					
 					$("#create-blog").ufForm({
 						validators: page.validators.createBlog,

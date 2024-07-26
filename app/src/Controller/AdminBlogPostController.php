@@ -17,7 +17,7 @@ class AdminBlogPostController
     {
     }
 
-    function getSingleBlogAdmin(Request $request, Response $response, $args) {
+    function getSingleBlogAdmin(Blog $blog, Request $request, Response $response, $args) {
 		
 		$blog = Blog::where('slug', $args['blog_slug'])->first();
 		
