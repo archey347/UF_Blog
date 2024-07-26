@@ -5,41 +5,46 @@ namespace UserFrosting\Sprinkle\Blog\Controller;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
+use UserFrosting\Alert\AlertStream;
+use UserFrosting\Fortress\Adapter\FormValidationArrayAdapter;
+use UserFrosting\Fortress\RequestSchema;
+use UserFrosting\Fortress\Transformer\RequestDataTransformer;
+use UserFrosting\Fortress\Validator\ServerSideValidator;
 use UserFrosting\Sprinkle\Account\Authenticate\Authenticator;
+use UserFrosting\Sprinkle\Account\Exceptions\ForbiddenException;
 use UserFrosting\Sprinkle\Blog\Authorise\BlogAccessControlLayerInterface;
+use UserFrosting\Sprinkle\Blog\Database\Models\Blog;
+use UserFrosting\Sprinkle\Blog\Database\Models\BlogPost;
+use UserFrosting\Sprinkle\Blog\Sprunje\PostSprunje;
+use UserFrosting\Sprinkle\Core\Exceptions\NotFoundException;
+use UserFrosting\Sprinkle\Core\Exceptions\ValidationException;
 
 class AdminBlogPostController
 {
     function __construct(
         protected Twig $view, 
         protected Authenticator $authenticator,
-        protected BlogAccessControlLayerInterface $acl)
+        protected BlogAccessControlLayerInterface $acl,
+		protected FormValidationArrayAdapter $formValidationArrayAdapter,
+		protected ServerSideValidator $validator,
+        protected RequestDataTransformer $transformer,
+        protected AlertStream $alerts)
     {
     }
 
-    function getSingleBlogAdmin(Blog $blog, Request $request, Response $response, $args) {
-		
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
-		
-		$this->checkAccess($blog->read_permission);
-		
-		if ($blog == null) {
-			throw new NotFoundException($request, $response);	
+    function page(Blog $blog, Request $request, Response $response) 
+	{
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
 		
-		$create_post_schema = new RequestSchema('schema://requests/create-post.yaml');
-		$create_post_validator = new JqueryValidationAdapter($create_post_schema, $this->ci->translator);
+		$schema = new RequestSchema('schema://requests/post.yaml');
+		$rules = $this->formValidationArrayAdapter->rules($schema);
 		
-		$edit_post_schema = new RequestSchema('schema://requests/edit-post.yaml');
-		$edit_post_validator = new JqueryValidationAdapter($edit_post_schema, $this->ci->translator);
-		
-		
-		return $this->ci->view->render($response, 'pages/blog.html.twig', [
-			'blog' => $blog->toArray(),
+		return $this->view->render($response, 'pages/blog.html.twig', [
 			'page' => [
 				'validators' => [
-					'postCreate' => $create_post_validator->rules(),
-					'postEdit' => $edit_post_validator->rules()
+					'post' => $rules
 				],
 				"blog" => $blog->toArray()
 			]
@@ -47,55 +52,32 @@ class AdminBlogPostController
 			
 	}
 	
-	function getPosts(Request $request, Response $response, $args) {
+	function getPosts(Blog $blog, Request $request, Response $response) {
 		
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
-		
-		$this->checkAccess($blog->read_permission);
-		
-		if ($blog == null) {
-			throw new NotFoundException($request, $response);	
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
 		
-		// GET parameters
-        $params = $request->getQueryParams();
+		$params = $request->getQueryParams();
+		$params['blog_id'] = $blog;
 
-        /** @var UserFrosting\Sprinkle\Core\Util\ClassMapper $classMapper */
-        $classMapper = $this->ci->classMapper;
+        $sprunje = new PostSprunje($params);
 
-        $sprunje = new PostSprunje($classMapper, $params, $args['blog_slug']);
-
-        // Be careful how you consume this data - it has not been escaped and contains untrusted user-supplied content.
-        // For example, if you plan to insert it into an HTML DOM, you must escape it on the client side (or use client-side templating).
         return $sprunje->toResponse($response); 
 	}
 	
-	public function getModalPostCreate(Request $request, Response $response, $args) {
-		
-		$blog_slug = $request->getQueryParam('blog_slug');
-		
-		$ms = $this->ci->alerts;
-		
-		if($blog_slug == null) {
-			$ms->addMessage('danger', "No blog assigned to edit.");
-			return $response->withStatus(422);
+	public function getModalPostCreate(Blog $blog, Request $request, Response $response) 
+	{	
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
-		
-        $blog = Blog::where('slug', $blog_slug)->first();
-		
-		if($blog == null) {
-			$ms->addMessage('danger', "Blog '$blog_slug' doesn't exist.");
-			return $response->withStatus(400);
-		}
-		
-		$this->checkAccess($blog->write_access);
-		
-		return $this->ci->view->render($response, 'modals/blog-post.html.twig',
+
+		return $this->view->render($response, 'modals/blog-post.html.twig',
             [
                 "form" =>
                 [
                     "submit" => "Create Post",
-					"action" => "api/blogs/b/$blog_slug/posts",
+					"action" => "api/blogs/b/{$blog->id}/posts",
 					"method" => "POST",
 					"id" => "create-post"
                 ]
@@ -103,248 +85,131 @@ class AdminBlogPostController
         );    
     }
 	
-	public function createPost(Request $request, Response $response, $args) {
-		
-		
-		$ms = $this->ci->alerts;
-		
-		if($args['blog_slug'] == null) {
-			$ms->addMessage('danger', "No blog assigned to edit.");
-			return $response->withStatus(422);
+	public function createPost(Blog $blog, Request $request, Response $response) 
+	{
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
-		
 		// Get submitted data
+	
 		$params = $request->getParsedBody();
 		
 		// Load the request schema
-		$schema = new RequestSchema('schema://requests/create-post.yaml');
+		$schema = new RequestSchema('schema://requests/post.yaml');
 		
 		// Whitelist and set parameter defaults
-		$transformer = new RequestDataTransformer($schema);
-		$data = $transformer->transform($params);
+		$data = $this->transformer->transform($schema, $params);
 		
-		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
-		$ms = $this->ci->alerts;
+		$errors = $this->validator->validate($schema, $data);
 		
-		$validator = new ServerSideValidator($schema, $this->ci->translator);
-		
-		// Add error messages and halt if validation failed
-		if (!$validator->validate($data)) {
-			$ms->addValidationErrors($validator);
-			return $response->withStatus(400);
-		}
-		
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
-		
-		$this->checkAccess($blog->write_permission);
-		
-		if($blog == null) {
-			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
-			return $response->withStatus(400);	
+		if(count($errors) > 0) {
+			$e = new ValidationException();
+			$e->addErrors($errors);
+
+			throw $e;
 		}
 		
 		$blog->posts()->create([
 			"title" => $params['post_title'],
 			"content" => $params['post_content'],
-			"author" => $this->ci->currentUser->id,
-			"last_updates_by" => $this->ci->currentUser->id
+			"author" => $this->authenticator->user()->id,
+			"last_updates_by" => $this->authenticator->user()->id,
 		]);
 		
-		$ms->addMessage('success', "Blog post successfully created.");
+		$this->alerts->addMessage('success', "Blog post successfully created.");
 	}
 	
-	public function getModalPostEdit(Request $request, Response $response, $args) {
-		
-		$blog_slug = $request->getQueryParam('slug');
-		$post_id = $request->getQueryParam('id');
-		
-		
-		$ms = $this->ci->alerts;
-		
-		if($blog_slug == null) {
-			$ms->addMessage('danger', "No blog assigned to edit.");
-			return $response->withStatus(422);
-		}
-		
-		if($post_id == null) {
-			$ms->addMessage('danger', "No post assigned to edit.");
-			return $response->withStatus(422);
-		}
-		
-		$blog = Blog::where('slug', $blog_slug)->first();
-		
-		$this->checkAccess($blog->write_permission);
+	public function getModalPostEdit(BlogPost $blog_post, Request $request, Response $response) 
+	{	
+		$blog_post->load('blog');
+		$blog = $blog_post->blog;
 
-		if(!$blog->count()) {
-			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
-			return $response->withStatus(404);
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
 		
-		$post = BlogPost::find($post_id);
-		
-		if($post == null) {
-			$ms->addMessage('danger', "Post Not Found");
-			return $response->withStatus(404);
-		}
-		
-        return $this->ci->view->render($response, 'modals/blog-post.html.twig',
+		return $this->view->render($response, 'modals/blog-post.html.twig',
             [
                 "form" =>
                 [
                     "submit" => "Edit Post",
-					"action" => "api/blogs/b/$blog_slug/posts/p/$post_id",
+					"action" => "api/blog_posts/p/{$blog_post->id}",
 					"method" => "PUT",
 					"id" => "edit-post"
                 ],
-				"post" =>
-				[
-					"title" => $post->title,
-					"content" => $post->content
-				]
+				"post" => $blog_post->toArray()
             ]
         );    
     }
 	
-	public function editPost(Request $request, Response $response, $args) {
-		
-		
-		$ms = $this->ci->alerts;
-		
-		if($args['blog_slug'] == null) {
-			$ms->addMessage('danger', "No blog assigned to edit.");
-			return $response->withStatus(422);
-		}
-		
-		if($args['post_id'] == null) {
-			$ms->addMessage('danger', "No post assigned to edit.");
-			return $response->withStatus(422);
+	public function editPost(BlogPost $blog_post, Request $request, Response $response) 
+	{
+		$blog_post->load('blog');
+		$blog = $blog_post->blog;
+
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
 		
 		// Get submitted data
 		$params = $request->getParsedBody();
 		
 		// Load the request schema
-		$schema = new RequestSchema('schema://requests/edit-post.yaml');
+		$schema = new RequestSchema('schema://requests/post.yaml');
 		
 		// Whitelist and set parameter defaults
-		$transformer = new RequestDataTransformer($schema);
-		$data = $transformer->transform($params);
+		$data = $this->transformer->transform($schema, $params);
 		
-		/** @var UserFrosting\Sprinkle\Core\MessageStream $ms */
-		$ms = $this->ci->alerts;
+		$errors = $this->validator->validate($schema, $data);
 		
-		$validator = new ServerSideValidator($schema, $this->ci->translator);
-		
-		// Add error messages and halt if validation failed
-		if (!$validator->validate($data)) {
-			$ms->addValidationErrors($validator);
-			return $response->withStatus(400);
+		if(count($errors) > 0) {
+			$e = new ValidationException();
+			$e->addErrors($errors);
+
+			throw $e;
 		}
 		
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
+		$blog_post->title = $params['post_title'];
+		$blog_post->content = $params['post_content'];
+		$blog_post->last_updates_by = $this->authenticator->user()->id;
+		$blog_post->save();
 		
-		$this->checkAccess($blog->write_permission);
-		
-		if($blog == null) {
-			$ms->addMessage('danger', $args['blog_slug']." doesn't exist.");
-			return $response->withStatus(400);	
-		}
-		
-		$post = BlogPost::find($args['post_id']);
-		
-		if($post == null) {
-			$ms->addMessage('danger', "Post Not Found");
-			return $response->withStatus(404);
-		}
-		
-		$post->title = $params['post_title'];
-		$post->content = $params['post_content'];
-		
-		$post->last_updates_by = $this->ci->currentUser->id;
-		
-		$post->save();
-		
-		$ms->addMessage('success', "Blog post successfully updated.");
+		$this->alerts->addMessage('success', "Blog post successfully updated.");
 	}
 	
-	public function getModalPostDelete(Request $request, Response $response, $args) {
-		
-		$blog_slug = $request->getQueryParam('slug');
-		$post_id = $request->getQueryParam('id');
-		
-		
-		$ms = $this->ci->alerts;
-		
-		if($blog_slug == null) {
-			$ms->addMessage('danger', "No blog assigned to edit.");
-			return $response->withStatus(422);
-		}
-		
-		if($post_id == null) {
-			$ms->addMessage('danger', "No post assigned to edit.");
-			return $response->withStatus(422);
-		}
-		
-		$blog = Blog::where('slug', $blog_slug)->first();
-		
-		$this->checkAccess($blog->write_access);
+	public function getModalPostDelete(BlogPost $blog_post, Request $request, Response $response) 
+	{
+		$blog_post->load('blog');
+		$blog = $blog_post->blog;
 
-		if(!$blog->count()) {
-			$ms->addMessage('danger', "Blog with slug '{$blog_slug}' not found");
-			return $response->withStatus(404);
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
 		
-		$post = BlogPost::find($post_id);
-		
-		if($post == null) {
-			$ms->addMessage('danger', "Post Not Found");
-			return $response->withStatus(404);
-		}
-		
-        return $this->ci->view->render($response, 'modals/confirm-delete-post.html.twig',
+        return $this->view->render($response, 'modals/confirm-delete-post.html.twig',
             [
                 "form" =>
                 [
                     "submit" => "Delete Post",
-					"action" => "api/blogs/b/$blog_slug/posts/p/$post_id",
+					"action" => "api/blog_posts/p/{$blog_post->id}",
 					"method" => "DELETE",
                 ],
-				"post" =>
-				[
-					"title" => $post->title,
-					"content" => $post->content
-				]
+				"post" => $blog_post->toArray(),
             ]
         );    
     }
 	
-	function deletePost(Request $request, Response $response, $args) {
-		$ms = $this->ci->alerts;
-		
-		if($args['blog_slug'] == null) {
-			$ms->addMessage('danger', "No blog assigned to edit.");
-			return $response->withStatus(422);
+	function deletePost(BlogPost $blog_post, Request $request, Response $response) {
+		$blog_post->load('blog');
+		$blog = $blog_post->blog;
+
+		if(!$this->acl->checkAdminAccess($this->authenticator->user(), $blog)) {
+			throw new NotFoundException();
 		}
+
+		$blog_post->delete();
 		
-		$blog = Blog::where('slug', $args['blog_slug'])->first();
-		
-		$this->checkAccess($blog->write_permission);
-		
-		if($args['post_id'] == null) {
-			$ms->addMessage('danger', "No post assigned to delete.");
-			return $response->withStatus(422);
-		}
-		
-		$post = BlogPost::find($args['post_id']);
-		
-		if($post == null) {
-			$ms->addMessage('danger', "Post not found.");
-			return $response->withStatus(404);	
-		}
-		
-		$post->delete();
-		
-		$ms->addMessage('success', "Successfully deleted post.");
+		$this->alerts->addMessage('success', "Successfully deleted post.");
 		
 	}
 }

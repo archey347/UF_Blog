@@ -1,7 +1,7 @@
 {% extends 'pages/abstract/dashboard.html.twig' %}
 
 {# Overrides blocks in head of base template #}
-{% block page_title %}Blogs | Manage Blog '{{blog.slug}}'{% endblock %}
+{% block page_title %}Blogs | Manage Blog '{{page.blog.title}}'{% endblock %}
 {% block page_description %}{% endblock %}
 
 {% block stylesheets_page %}
@@ -40,5 +40,5 @@
 		{% include "pages/partials/page.js.twig" %}
 	</script>
 	
-	{{ assets.js('js/admin/blog') | raw}}
+
 {% endblock %}

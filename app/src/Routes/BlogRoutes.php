@@ -22,6 +22,10 @@ class BlogRoutes implements RouteDefinitionInterface
         
         $app->group('/admin/blogs', function(RouteCollectorProxy $group) {
             $group->get('', [AdminBlogsController::class, 'page']);
+
+            $group->group('/b/{id}', function(RouteCollectorProxy $group) {
+                $group->get('', [AdminBlogPostController::class, 'page']);
+            })->add(BlogInjector::class);
         })->add(AuthGuard::class);
             
         $app->group('/api', function (RouteCollectorProxy $group) {
@@ -51,7 +55,7 @@ class BlogRoutes implements RouteDefinitionInterface
             $group->get('/confirm-delete', [AdminBlogsController::class, 'getModalConfirmDelete'])->add(BlogInjector::class);
             
             $group->group('/post', function (RouteCollectorProxy $group) {
-                $group->get('/create', [AdminBlogPostController::class, 'getModalPostCreate']);
+                $group->get('/create', [AdminBlogPostController::class, 'getModalPostCreate'])->add(BlogInjector::class);
                 $group->get('/edit', [AdminBlogPostController::class, 'getModalPostEdit'])->add(BlogPostInjector::class);
                 $group->get('/delete', [AdminBlogPostController::class, 'getModalPostDelete'])->add(BlogPostInjector::class);
             });

@@ -47,9 +47,6 @@
 	
 	<script id="post-table-col-actions" type="text/x-handlebars-template">
 		<td>
-			{% endverbatim %}
-			{% if checkAccess(blog.write_permission) %}
-			{% verbatim %}
 			<div class="btn-group">
 				<button type="button" class="btn btn-primary js-edit-post" data-post-id="{{row.id}}">
 					<i class="fa fa-edit"></i> Edit Post
@@ -58,9 +55,6 @@
 					<i class="fa fa-trash-o"></i> Delete Post
 				</button>
 			</div>
-			{% endverbatim %}
-			{% endif %}
-			{% verbatim %}
 		</td>
     </script>
     

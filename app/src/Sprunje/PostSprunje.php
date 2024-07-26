@@ -8,7 +8,7 @@ use UserFrosting\Sprinkle\Blog\Database\Models\Blog;
 
 class PostSprunje extends Sprunje
 {
-    protected $name = 'blogposts';
+    protected $name = 'blog_posts';
 
 	protected $sortable = [
 		'title',
@@ -28,21 +28,11 @@ class PostSprunje extends Sprunje
 	
 	protected $blog_slug;
 	
-	public function __construct(ClassMapper $classMapper, array $options, $blog_slug) {
-		$this->blog_slug = $blog_slug;
-		parent::__construct($classMapper, $options);
-	}
-	
-    /**
+	/**
      * Set the initial query used by your Sprunje.
      */
     protected function baseQuery()
     {
-		
-        $instance = Blog::where('slug', $this->blog_slug)->first();
-
-		$instance = $instance->posts();
-		
-        return $instance->newQuery();
+        return $this->options['blog']->posts();
     }
 }
