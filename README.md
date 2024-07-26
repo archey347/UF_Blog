@@ -34,7 +34,9 @@ When the sprinkle is first installed, there are two permissions:
 
 Both permissions allow access to managing the blogs, however, `uri_blog_manager_view` gives only read access to the blog managment (This is useful if you want to allow somebody to add or remove posts to the blogs but not actually manage them).
 
-For each blog, a read and write permission is created which can be used to control who has access. There is also a 'public' option which doesn't require an authenticated session to view the blog.
+By default, all blogs are publicly viewable.
+
+Permissions can be customised on a per-blog basis, by overriding the blog access control layer with a class that implements the interface `UserFrosting\Sprinkle\Blog\Authorise\BlogAccessControlLayerInterface`.
 
 ## Contributing
 
