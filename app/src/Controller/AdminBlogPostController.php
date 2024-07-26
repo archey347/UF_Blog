@@ -63,6 +63,10 @@ class AdminBlogPostController
 
         $sprunje = new PostSprunje($params);
 
+		$sprunje->extendQuery(function ($query) use ($blog) {
+			return $query->where('blog_id', $blog->id);
+		});
+
         return $sprunje->toResponse($response); 
 	}
 	
@@ -117,6 +121,11 @@ class AdminBlogPostController
 		]);
 		
 		$this->alerts->addMessage('success', "Blog post successfully created.");
+
+		$payload = json_encode([], JSON_THROW_ON_ERROR);
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
 	}
 	
 	public function getModalPostEdit(BlogPost $blog_post, Request $request, Response $response) 
@@ -175,6 +184,11 @@ class AdminBlogPostController
 		$blog_post->save();
 		
 		$this->alerts->addMessage('success', "Blog post successfully updated.");
+
+		$payload = json_encode([], JSON_THROW_ON_ERROR);
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
 	}
 	
 	public function getModalPostDelete(BlogPost $blog_post, Request $request, Response $response) 
@@ -210,6 +224,10 @@ class AdminBlogPostController
 		$blog_post->delete();
 		
 		$this->alerts->addMessage('success', "Successfully deleted post.");
-		
+
+		$payload = json_encode([], JSON_THROW_ON_ERROR);
+        $response->getBody()->write($payload);
+
+        return $response->withHeader('Content-Type', 'application/json');
 	}
 }

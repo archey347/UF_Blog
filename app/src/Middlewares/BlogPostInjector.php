@@ -34,7 +34,7 @@ class BlogPostInjector extends AbstractInjector
      *
      * @return GroupInterface
      */
-    protected function getInstance(?string $id): Blog
+    protected function getInstance(?string $id): BlogPost
     {
         if ($id === null || ($blog_post = BlogPost::find($id)) === null) {
             throw new NotFoundException();

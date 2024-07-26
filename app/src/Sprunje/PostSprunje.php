@@ -1,16 +1,14 @@
 <?php
 namespace UserFrosting\Sprinkle\Blog\Sprunje;
 
-use UserFrosting\Sprinkle\Core\Facades\Debug;
 use UserFrosting\Sprinkle\Core\Sprunje\Sprunje;
-use UserFrosting\Sprinkle\Core\Util\ClassMapper;
-use UserFrosting\Sprinkle\Blog\Database\Models\Blog;
+use UserFrosting\Sprinkle\Blog\Database\Models\BlogPost;
 
 class PostSprunje extends Sprunje
 {
-    protected $name = 'blog_posts';
+    protected string $name = 'blog_posts';
 
-	protected $sortable = [
+	protected array $sortable = [
 		'title',
         'author',
 		'last_updated_by',
@@ -18,7 +16,7 @@ class PostSprunje extends Sprunje
 		'updated_by'    
     ];
 
-    protected $filterable = [
+    protected array $filterable = [
 		'title',
         'author',
 		'last_updated_by',
@@ -33,6 +31,11 @@ class PostSprunje extends Sprunje
      */
     protected function baseQuery()
     {
-        return $this->options['blog']->posts();
+        $instance = new BlogPost();
+
+        // Alternatively, if you have defined a class mapping, you can use the classMapper:
+        // $instance = $this->classMapper->createInstance('owl');
+
+        return $instance->newQuery();
     }
 }
