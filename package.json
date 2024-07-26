@@ -3,8 +3,7 @@
     "version": "v0.0.0",
     "dependencies": {
         "@userfrosting/sprinkle-admin": "~5.1.0",
-        "@userfrosting/theme-adminlte": "~5.1.0",
-        "@ckeditor/ckeditor5-build-classic": "^16.0.0"
+        "@userfrosting/theme-adminlte": "~5.1.0"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^4.4.0",
