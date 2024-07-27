@@ -1,4 +1,20 @@
+import { ClassicEditor, Essentials, Bold, Italic, Font, Paragraph } from 'ckeditor5';
+
+import 'ckeditor5/ckeditor5.css'
+
 function preparePostForm(form) {
+	ClassicEditor
+    .create( document.querySelector( '.js-editor' ), {
+        plugins: [ Essentials, Bold, Italic, Font, Paragraph ],
+        toolbar: {
+            items: [
+                'undo', 'redo', '|', 'bold', 'italic', '|',
+                'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor'
+            ]
+        }
+    } );
+
+
 	form.ufForm({
 		validators: page.validators.postEdit,
 		msgTarget: $("#blog-alert")

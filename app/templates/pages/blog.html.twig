@@ -1,11 +1,11 @@
 {% extends 'pages/abstract/dashboard.html.twig' %}
 
 {# Overrides blocks in head of base template #}
-{% block page_title %}Blogs | Manage Blog '{{page.blog.title}}'{% endblock %}
+{% block page_title %}Manage Blog '{{page.blog.title}}'{% endblock %}
 {% block page_description %}{% endblock %}
 
 {% block stylesheets_page %}
-
+	{{ encore_entry_link_tags('page.admin.blog-posts') }}
 {% endblock %}
 
 {% block body_matter %}
