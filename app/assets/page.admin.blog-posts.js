@@ -1,0 +1,1 @@
+require("./js/blog-posts.js")

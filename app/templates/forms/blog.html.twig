@@ -1,0 +1,11 @@
+<form id="{{form.id}}" class="js-form" method="{{form.method | default('POST')}}" action="{{site.uri.public}}/{{form.action}}">
+	{% include "forms/csrf.html.twig" %}
+    <div class="js-form-alerts" id="blog-alert">
+    </div>
+	<div class="form-group has-feedback">
+		<label>Blog Title</label>
+		<input type="text" class="form-control" name="blog_name" id="blog_name" value="{{blog.title}}">
+	</div>
+	
+	<button class="btn btn-primary">{{form.submit}}</button>
+</form>

@@ -1,0 +1,63 @@
+{% extends "tables/table-paginated.html.twig" %}
+
+{% block table %}
+    <table id="{{table.id}}" class="tablesorter table table-bordered table-hover table-striped" data-sortlist="{{table.sortlist}}">
+        <thead>
+            <tr>
+                <th class="sorter-metatext" data-column-name="title" data-column-template="#post-table-col-title" data-priority="critical">Post Title <i class="fa fa-sort"></i></th>
+				<th class="sorter-metatext" data-column-name="author" data-column-template="#post-table-col-author" data-priority="3">Author <i class="fa fa-sort"></i></th>
+				<th class="sorter-metatext" data-column-name="last_updates_by" data-column-template="#post-table-col-last-updates-by" data-priority="2">Last Updated By <i class="fa fa-sort"></i></th>
+				<th class="sorter-metatext" data-column-template="#post-table-col-actions" data-priority="critical">Actions</i></th>
+			</tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block table_cell_templates %}
+
+    {% verbatim %}
+    <script id="post-table-col-title" type="text/x-handlebars-template">
+        <td data-text="{{row.title}}">
+            <strong>
+                {{row.title}}
+            </strong>
+			
+        </td>
+    </script>
+	
+	<script id="post-table-col-author" type="text/x-handlebars-template">
+        <td data-text="{{row.title}}">
+            <strong>
+                {{row.author_user.first_name}} {{row.author_user.last_name}} ({{row.author_user.user_name}})
+            </strong><br>
+			at {{dateFormat row.created_at format="MMM Do, YYYY h:mm a"}}
+        </td>
+    </script>
+	
+	<script id="post-table-col-last-updates-by" type="text/x-handlebars-template">
+        <td data-text="{{row.title}}">
+            <strong>
+                {{row.last_updates_by_user.first_name}} {{row.last_updates_by_user.last_name}} ({{row.last_updates_by_user.user_name}})
+            </strong><br>
+			at {{dateFormat row.updated_at format="MMM Do, YYYY h:mm a"}}
+        </td>
+    </script>
+	
+	<script id="post-table-col-actions" type="text/x-handlebars-template">
+		<td>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary js-edit-post" data-post-id="{{row.id}}">
+					<i class="fa fa-edit"></i> Edit Post
+				</button>
+				<button type="button" class="btn btn-danger js-delete-post" data-post-id="{{row.id}}">
+					<i class="fa fa-trash-o"></i> Delete Post
+				</button>
+			</div>
+		</td>
+    </script>
+    
+    {% endverbatim %}
+
+{% endblock %}

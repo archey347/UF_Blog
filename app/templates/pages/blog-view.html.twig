@@ -1,0 +1,31 @@
+{% extends "pages/abstract/default.html.twig" %}
+
+{% block page_title %}{{blog.title}}{% endblock %}
+
+{% block page_description %}{% endblock %}
+
+{% block body_matter %}
+
+{% for post in posts %}
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+        <h3 class="panel-title">{{post.title}}</h3>
+        </div>
+        <div class="panel-body">
+        {{post.content|raw|nl2br}}
+        </div>
+        <div class="panel-footer">
+        {%if post.updated_at > post.created_at %}
+            <i>Last Updated at {{post.updated_at|date('M jS, Y g:i a')}} by {{post.last_updates_by_user.first_name}} {{post.last_updates_by_user.last_name}}</i>
+        {%else%}
+            <i>Created at {{post.created_at|date('M jS, Y g:i a')}} by {{post.author_user.first_name}} {{post.author_user.last_name}}</i>
+        {%endif%}
+        </div>
+    </div>
+{% endfor %}
+
+{% if posts|length == 0 %}
+No posts to show :(
+{% endif %}
+{% endblock %}
