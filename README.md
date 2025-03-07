@@ -13,23 +13,24 @@ composer require archey347/uf_blog
 npm install @archey347/uf_blog
 ```
 3. Add the blog sprinkle to `sprinkles` at the top of your `webpack.config.js`
-```
+```javascript
 const sprinkles = {
-  ...
+  // ...
   Blog: require('@archey347/uf_blog/webpack.entries')
+  // ...
 }
 ```
 4.
 Add the Blog sprinkle to `getSprinkles` in your main sprinkle recipe
-```
-...
+```php
+// ...
 use UserFrosting\Sprinkle\Blog\Blog;
-...
+// ...
 class MyApp implements
     SprinkleRecipe,
     BakeryRecipe
 {
-    ...
+    // ...
     public function getSprinkles(): array
     {
         return [
@@ -38,10 +39,10 @@ class MyApp implements
             Admin::class,
             AdminLTE::class,
             Blog::class,
-            ...
+            // ...
         ];
     }
-    ...
+    // ...
 }
 ```
 5. (Re)-build assets
