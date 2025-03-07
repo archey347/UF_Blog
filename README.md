@@ -2,21 +2,64 @@
 Blog sprinkle for Userfrosting v5.1.
 ![Screenshot of Blog and Dasboard](https://raw.githubusercontent.com/archey347/userfrosting-blog/master/Capture.PNG)
 
-## Installation (UNTESTED)
+## Installation
 
 1. Add the package to your `composer.json`. This can be done with:
 ```
-composer require archey347/uf_blog "version!"
+composer require archey347/uf_blog
 ```
 2. Install via NPM
-
-3. Add to main webpack entries file
-
-
-4. Run the bakery migration to create the required database tables. Go to the root folder of your Userfrosting instance in a command line and run:
+```
+npm install @archey347/uf_blog
+```
+3. Add the blog sprinkle to `sprinkles` at the top of your `webpack.config.js`
+```
+const sprinkles = {
+  ...
+  Blog: require('@archey347/uf_blog/webpack.entries')
+}
+```
+4.
+Add the Blog sprinkle to `getSprinkles` in your main sprinkle recipe
+```
+...
+use UserFrosting\Sprinkle\Blog\Blog;
+...
+class MyApp implements
+    SprinkleRecipe,
+    BakeryRecipe
+{
+    ...
+    public function getSprinkles(): array
+    {
+        return [
+            Core::class,
+            Account::class,
+            Admin::class,
+            AdminLTE::class,
+            Blog::class,
+            ...
+        ];
+    }
+    ...
+}
+```
+5. (Re)-build assets
+```
+php bakery assets:build
+```
+6. Run the bakery migration to create the required database tables.
 ```bash
 php bakery migrate
 ```
+7. Seed the permissions for access control
+```
+php bakery seed
+```
+Then select `UserFrosting\Sprinkle\Blog\Database\Seeds\BlogPermissionsSeed`
+
+Hopefully, after all that, you should be able to visit `http://<your-ip>/admin/blogs` and see the blog admin page. 
+
 ## WYSIWYG Editor
 
 The blog uses the CKeditor 5 to allow for basic formatting in blog posts
